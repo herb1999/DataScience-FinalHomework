@@ -6,13 +6,14 @@ from src.rating import *
 from src.statistics import *
 from src.label_recommand import *
 from src.code_recommand import *
-caseId='2307'
+if __name__ == '__main__':
+    caseId = '2307'
 
-downloadAndUnzip(caseId)
-calcuResults(caseId)
-rate(caseId)
-searchCase(caseId)
-getRecommendedLabel(caseId)
-getRecommendedCode('../cases/2307/4','2307')
+    downloadAndUnzip(caseId)
+    calcuResults(caseId)
+    rate(caseId)
+    searchCase(caseId)
+    getRecommendedLabel(caseId)
+    getRecommendedCode('../cases/2307/4', '2307')
 
 

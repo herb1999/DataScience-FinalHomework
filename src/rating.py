@@ -37,6 +37,8 @@ def checkResult(filePath):
 
 """
 def checkPython(filePath):
+    if filePath[-1]=='0':
+        return True
     path=filePath+'/properties'
     f = open(path, 'r')
     res = f.read()
@@ -66,9 +68,12 @@ def calcuResults(caseId):
     #sys.stdout = open('output.txt', 'w')
     print('-------------测试代码--------------------')
     filePathList=getFilePathList(caseId)
+
+    # 测试用例路径
+    casePath = filePathList[1] + '/.mooctest/testCases.json'
+
     for filePath in filePathList:
-        #测试用例路径
-        casePath = filePath+'/.mooctest/testCases.json'
+
         #学生代码路径
         pyPath= filePath +'/main.py'
         #todo：封装一个loadJson

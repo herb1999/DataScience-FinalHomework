@@ -5,7 +5,7 @@ import json
 import urllib.request, urllib.parse
 import string
 import zipfile
-
+import shutil
 """下载并解压代码.
 
     Args:
@@ -25,13 +25,16 @@ def downloadAndUnzip(caseId):
     filePathList = []
     count=0
 
+    if not os.path.exists('../cases'):
+        os.mkdir('../cases')
+
     #创建该case的文件夹
     dir='../cases/' + caseId
     if not os.path.exists(dir):
         os.mkdir(dir)
-    else:
-        print('-------------文件已下载--------------------')
-        return
+    # else:
+    #     print('-------------文件已下载--------------------')
+    #     return
 
     for user in data.items():
         cases = user[1]['cases']
@@ -62,7 +65,14 @@ def downloadAndUnzip(caseId):
                 f = zipfile.ZipFile(subFilename, 'r')
                 for file in f.namelist():
                     f.extract(file, filePath[:-4] + '/')
+    # 添加答案代码路径到filePathList
+    pathForAnswer='../cases/' + caseId + '/0'
+    if not os.path.exists(pathForAnswer):
+        os.mkdir(pathForAnswer)
+        shutil.copy(filePathList[0]+'/.mooctest/answer.py',pathForAnswer+'/main.py')
+    filePathList.append(pathForAnswer)
     #储存代码路径数组到filename.json
+
     res={}
     res[caseId] = filePathList
     print(filePathList)
