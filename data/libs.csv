@@ -1,1 +1,18 @@
 sys,math,functools,collections,re
+argv,e,cmp_to_key,namedtuple,search
+exit,exp,partial,deque,match
+getdefaultencoding,pi,total_ordering ,defaultdict,findall
+setdefaultencoding,ceil,update_wrapper,OrderedDict ,split
+getfilesystemencoding,floor,wraps,Counter,finditer
+path,fabs,,,sub
+version,trunc,,,
+platform,factorial ,,,
+stdin,gcd,,,
+stdout,log,,,
+stderr,log10,,,
+,modf,,,
+,sqrt,,,
+,pow,,,
+,sin,,,
+,cos,,,
+,tan,,,
