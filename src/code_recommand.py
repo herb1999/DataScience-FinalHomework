@@ -20,7 +20,7 @@ import numpy as np
         距离最近和最远的代码
 
 """
-# todo:pearson：Pearson\kendall\spearman相关系数?
+# todo:pearson：Pearson\kendall\spearman相关系数? 有没有比余弦距离更好的度量两个向量的相关性的方法？
 def getRecommendedCode(path,caseId):
     print('-------------代码推荐开始--------------------')
     stat=getStatistics(caseId)

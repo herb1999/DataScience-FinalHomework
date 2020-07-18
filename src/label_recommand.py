@@ -14,6 +14,19 @@ import sklearn
 from scipy.cluster.vq import vq, kmeans, whiten
 from sklearn.decomposition import PCA
 
+def draw_after_kmeans(X,label,k):
+    idx = []  # 分类结果，为X中的行下标
+    clusters = []  # 使用下标分开的dataFrames
+    for i in range(k):
+        idx.append(np.where(label == i)[0])
+        clusters.append(X[idx[i], :])
+    fig, ax = plt.subplots(figsize=(9, 6))
+    colors=['r','g','b','c']
+    for i in range(k):
+        ax.scatter(clusters[i][:, 0], clusters[i][:, 1], s=30, color=colors[i], label='Cluster '+str(i+1))
+    ax.legend()
+    plt.show()
+
 """获取推荐标签
 
     Args:
@@ -26,32 +39,29 @@ from sklearn.decomposition import PCA
 
 
 # todo:k值优化
-# todo: 多次随机，损失函数优化
 # todo:可能漏掉使用少但是关键的label
-
 # todo: 难点：证明label聚出的类和评分的相关性，这样才可以对所有代码聚类，选出评分最高的一个类；不然就只能评分选代码，再聚类
 # todo: 或者探索一下方法与评分的关联性？
-# todo:聚类前可以PCA降维了
 def getRecommendedLabel(caseId):
     print('-------------标签推荐开始--------------------')
     # stat = getStatistics(caseId)
-    # sums = stat.iloc[:, 1:].sum().sort_values(ascending=False)  # todo:使用次数不太合适 sigmoid()映射到[0,1]
+    # sums = stat.iloc[:, 1:].sum().sort_values(ascending=False)
     # # stat.sort_values()
     # print(sums)
     # print('-------------标签推荐完成--------------------')
     # return sums[:4]
 
-    k = 3
+    k = 4
 
     stat = getStatistics(caseId)
     rated = getRated(caseId)
     rated = pd.DataFrame(rated, columns=['path', 'rate'])  # todo:是把评分用到的度量特征和方法使用放在一起聚类，还是只用方法？
-    # print(rated)
+    print(rated)
     X = pd \
         .merge(stat, rated, on='path', how='outer') \
         .fillna(0) \
         .set_index('path')
-    # print(X)
+    print(X)
     # 降维部分
     pca = PCA(n_components=2)
     pca.fit(X)
@@ -180,15 +190,3 @@ if __name__ == '__main__':
 # ax.scatter(cluster4[:, 0], cluster4[:, 1], s=30, color='c', label='centriods')
 # ax.legend()
 # plt.show()
-def draw_after_kmeans(X,label,k):
-    idx = []  # 分类结果，为X中的行下标
-    clusters = []  # 使用下标分开的dataFrames
-    for i in range(k):
-        idx.append(np.where(label == i)[0])
-        clusters.append(X.iloc[idx[i], :])
-    fig, ax = plt.subplots(figsize=(9, 6))
-    colors=['r','g','b']
-    for i in range(k):
-        ax.scatter(clusters[i][:, 0], clusters[i][:, 1], s=30, color=colors[i], label='Cluster '+str(i+1))
-    ax.legend()
-    plt.show()

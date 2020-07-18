@@ -76,7 +76,6 @@ def calcuResults(caseId):
 
         #学生代码路径
         pyPath= filePath +'/main.py'
-        #todo：封装一个loadJson
         f = open(casePath, 'r')
         res = f.read()
         data = json.loads(res)
@@ -140,7 +139,6 @@ def calcuResults(caseId):
         评分结果存入data/rated.csv，rate取值区间[0,1]
 
 """
-#todo:使用分数最高的所有代码
 def rate(caseId):
     print('-------------代码评分--------------------')
     results={'time':[],'lines':[],'path':[]}

@@ -9,9 +9,7 @@ import pandas as pd
 import numpy as np
 from math import cos
 
-#todo:将答案代码纳入统计
 # todo:内置类的方法统计
-# todo:zyd,整理内置方法
 """统计case中所有代码的库、方法、语法糖。
 
     Args:
@@ -162,10 +160,8 @@ def searchMethod(lines):
         切分后的数组
 
 """
-#todo:补全操作符
 def splitLine(line):
     #操作符有的要转义，有的不用，测试清楚
-    #todo:zjy
     op = '[=\+\-\*/\[\]\(\)]'
     variable = '\s*[a-zA-Z_]+?[\w_]*\s*'
     #先以操作符分割字符串
@@ -183,9 +179,8 @@ def splitLine(line):
     # print(list)
     return list
 
-#search('2307')
-# print(searchCode('../cases/2307/4'))
-# with open('../cases/2307/32/main.py','r') as f:
-#     lines=f.readlines()
-#     for line in lines:
-#         print(splitLine(line))
+if __name__ == '__main__':
+    with open('../cases/2307/32/main.py','r') as f:
+        lines=f.readlines()
+        for line in lines:
+            print(splitLine(line))
