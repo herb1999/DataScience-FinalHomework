@@ -12,6 +12,7 @@ import seaborn as sb
 from scipy.io import loadmat
 import sklearn
 from scipy.cluster.vq import vq, kmeans, whiten
+from sklearn.decomposition import PCA
 
 """获取推荐标签
 
@@ -22,7 +23,6 @@ from scipy.cluster.vq import vq, kmeans, whiten
         使用量靠前的标签
 
 """
-
 
 
 # todo:k值优化
@@ -41,38 +41,50 @@ def getRecommendedLabel(caseId):
     # print('-------------标签推荐完成--------------------')
     # return sums[:4]
 
-    k=3
+    k = 3
 
     stat = getStatistics(caseId)
     rated = getRated(caseId)
+    rated = pd.DataFrame(rated, columns=['path', 'rate'])  # todo:是把评分用到的度量特征和方法使用放在一起聚类，还是只用方法？
+    # print(rated)
+    X = pd \
+        .merge(stat, rated, on='path', how='outer') \
+        .fillna(0) \
+        .set_index('path')
+    # print(X)
+    # 降维部分
+    pca = PCA(n_components=2)
+    pca.fit(X)
+    X_new = pca.transform(X)
+    print(X_new)
+    plt.scatter(X_new[:, 0], X_new[:, 1], marker='o')
+    plt.show()
 
-    rated = pd.DataFrame(rated,['path','rate']) # todo:是把评分用到的度量特征和方法使用放在一起聚类，还是只用方法？
-    X =pd\
-            .merge(stat, rated, on='path',how='outer')\
-            .fillna(0)\
-            .set_index('path')\
+    # 聚类部分
     # https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.vq.kmeans.html#scipy.cluster.vq.kmeans
-
-    centriods,loss = kmeans(X.values, k_or_guess=k) #todo:之后根据loss优化k值
-    label = vq(X.values, centriods)[0]
+    centriods, loss = kmeans(X_new, k_or_guess=k)  # todo:之后根据loss优化k值
+    label = vq(X_new, centriods)[0]
     print(label)
-    idx=[]  #分类结果，为X中的行下标
+    idx = []  # 分类结果，为X中的行下标
     clusters = []  # 使用下标分开的dataFrames
-    rate=[]  # 各cluster的平均评分
+    rate = []  # 各cluster的平均评分
     for i in range(k):
         idx.append(np.where(label == i)[0])
         clusters.append(X.iloc[idx[i], :])
-        rate.append(np.sum(clusters[i]['rate'])/len(idx[i]))
+        rate.append(np.sum(clusters[i]['rate']) / len(idx[i]))
     # print(X[np.where(label == 0)[0], :])
+    print(X)
     print(clusters[0])
     print(rate)
     print(np.argmin(rate))
     print(clusters[int(np.argmin(rate))])
+    draw_after_kmeans(X_new,label,k)
     sums = clusters[int(np.argmin(rate))].sum().sort_values(ascending=False)
     # stat.sort_values()
     print(sums)
     print('-------------标签推荐完成--------------------')
     return sums[:4]
+
 
 # 目的：值得推荐的代码可能有十几个，也可能只有几个，要靠聚类区分出最优秀的一类代码
 
@@ -129,7 +141,8 @@ def k_means(X, k, max_iters):
 """
 测试代码
 """
-getRecommendedLabel('2307')
+if __name__ == '__main__':
+    getRecommendedLabel('2307')
 # stat = getStatistics('2307')
 # rated = getRated('2307')
 # X =pd\
@@ -167,3 +180,15 @@ getRecommendedLabel('2307')
 # ax.scatter(cluster4[:, 0], cluster4[:, 1], s=30, color='c', label='centriods')
 # ax.legend()
 # plt.show()
+def draw_after_kmeans(X,label,k):
+    idx = []  # 分类结果，为X中的行下标
+    clusters = []  # 使用下标分开的dataFrames
+    for i in range(k):
+        idx.append(np.where(label == i)[0])
+        clusters.append(X.iloc[idx[i], :])
+    fig, ax = plt.subplots(figsize=(9, 6))
+    colors=['r','g','b']
+    for i in range(k):
+        ax.scatter(clusters[i][:, 0], clusters[i][:, 1], s=30, color=colors[i], label='Cluster '+str(i+1))
+    ax.legend()
+    plt.show()

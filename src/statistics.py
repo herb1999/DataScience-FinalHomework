@@ -185,7 +185,7 @@ def splitLine(line):
 
 #search('2307')
 # print(searchCode('../cases/2307/4'))
-with open('../cases/2307/32/main.py','r') as f:
-    lines=f.readlines()
-    for line in lines:
-        print(splitLine(line))
+# with open('../cases/2307/32/main.py','r') as f:
+#     lines=f.readlines()
+#     for line in lines:
+#         print(splitLine(line))
