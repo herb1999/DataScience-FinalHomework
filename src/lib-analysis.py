@@ -8,6 +8,7 @@ Python 2.7运行通过
 
 import os
 from collections import Counter
+import matplotlib.pyplot as plt
 
 line_set = []
 
@@ -57,6 +58,19 @@ if __name__ == "__main__":
             file_name=(os.path.join(root, sub))
             if file_name.find('.py') > 0:
                 handle_file(file_name)
-
     result = Counter(line_set)
+    list_result = list(result.items())
+    X = []
+    Y = []
+    for i in range(0, len(result)):
+        X.append(list_result[i][0])
+        Y.append(list_result[i][1])
+    print(X, Y)
+    plt.bar(X, Y, align="center")
+    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.title('库统计')
+    plt.ylabel('次数')
+    plt.xlabel('库名')
+    plt.show()
+    # todo 库名和方法混杂了 导入不等于使用?
     print(result)
