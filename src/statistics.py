@@ -90,7 +90,7 @@ def searchCode(path):
     print(results_method)
     # 统计结果合并
     res = pd.concat([results_method,results_lib])
-    print(res)
+    print('res',res)
     print('-------------CODE 统计完成--------------------')
     return res
 
@@ -169,27 +169,44 @@ def searchMethod(lines,libs):
 
 """
 # todo:不要自定义的方法、不要变量
+def_list = [] #记录自定义方法名
+def_normal=['&','|','~','and','or','elif','if','else','\"']
+# 返回使用的库的方法名
+# 假设方法名都是在(前面  先以除(外分隔符分割每一行代码
 def splitLine(line):
-    #操作符有的要转义，有的不用，测试清楚
-    op = '[=\+\-\*/\[\]\(\)]'
+    op = '[=\+\-\*/\[\]\)<>:,]'
     variable = '\s*[a-zA-Z_]+?[\w_]*\s*'
-    #先以操作符分割字符串
-    res = (re.split(op, line))
+    if(line.strip().startswith("#")):
+        return []
+    res=(re.split(op,line))
     re_op1 = r'{}\.{}'.format(variable, variable)
     re_op = r'({})'.format(variable, variable)
+    re_def=r'def({})'.format(variable)
     list = []
-    #得到变量名/函数名
     for item in res:
-        if (re.match(re_op1, item) != None):
-            list.append(item)
-        else:
-            if (re.match(re_op, item) != None):
-                list.append(re.match(re_op, item).group(0))
-    # print(list)
+        cur = re.match(re_def,item)
+        if (cur != None):
+            def_list.append(cur.group(1).strip())
+            continue
+        tmp=re.split('\(',item)
+        if (len(tmp) <= 1):
+            continue
+        for i in range(0,len(tmp)-1):
+            func = tmp[i].strip()
+            if (len(func.split(" ")) > 1)|(len(func)==0):
+                continue
+            if (func.startswith('.')):
+                func = func[1:]
+            if(func not in def_list and func not in def_normal):
+                list.append(func)
     return list
-
 if __name__ == '__main__':
-    with open('../cases/2307/32/main.py','r') as f:
-        lines=f.readlines()
-        for line in lines:
-            print(splitLine(line))
+    # for i in range(0,48):
+    #     print("第",i,"道题的方法使用")
+    #     with open('../cases/2307/'+str(i)+'/main.py', 'r',encoding='UTF-8') as f:
+    #         lines = f.readlines()
+    #         for line in lines:
+    #             l=splitLine(line)
+    #             if(l!=[]):
+    #                 print(l)
+    searchCase('2307')

@@ -165,10 +165,21 @@ def rate(caseId):
     df['rate'] = df[['time-std', 'lines-std']].mean(axis=1)
     print(df)
     # 结果存入data/rated.csv
+    print('rate')
+    Y=[]
+    X=[i for i in range(1,len(df['rate'])+1)]
+    for i in range(0,len(df['rate'])):
+        Y.append(df['rate'][i])
+    Y=sorted(Y)
+    plt.plot(X,Y,'ob')
+    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.title(caseId+'题评分排序')
+    plt.ylabel('评分')
+    plt.show()
     df.to_csv('../cases/'+caseId+'/rated.csv')
     print('-------------代码评分完成--------------------')
 
-# rate('2307')
+rate('2307')
 
 
 
