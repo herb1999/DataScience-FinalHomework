@@ -35,7 +35,7 @@ def searchCase(caseId):
     results_candy = []
     for path in paths:
         with open(path+'/main.py', 'r', encoding='UTF-8') as f:
-            lines = f.readlines()
+            lines = clearCode(f.readlines())
             res=searchLib(lines)
             if len(res)>0:
                 res['path']=path
@@ -52,7 +52,7 @@ def searchCase(caseId):
     # print('results_lib: ')
     print(results_lib)
     # print('results_method: ')
-    # print(results_method)
+    print(results_method)
 
     # 统计结果合并
     df=pd\
@@ -104,25 +104,27 @@ def searchCode(path):
         res: dict,库名为key，value=1
 
 """
+# todo:找个地方全局sigmoid一下
+# todo: as 的检测
 def searchLib(lines):#todo:后续要统计库里具体的方法
-    res = {}
+    res = {'std':sigmoid(1)}
+    libs = getLibs()
     for line in lines:
-        # 除去注释行
-        line = line.strip()
-        if line.startswith('#'):
-            continue
-        if 'import' in line:
-            print('found: ' + line)
-            patterns = line.split(' ')
+        patterns = re.split(r'\s+', line)
+        lib = ''
+        # from xxx import xxx 的形式
+        if 'from' in line:
+            lib = patterns[patterns.index('from') + 1]
+        # import xxx 的形式
+        else:
+            lib = patterns[patterns.index('import') + 1]
 
-            # from xxx import xxx 的形式
-            if 'from' in line:
-                lib = patterns[patterns.index('from') + 1]
-                res[lib] = sigmoid(1)
-            # import xxx 的形式
-            else:
-                lib = patterns[patterns.index('import') + 1]
-                res[lib] = sigmoid(1)
+        if lib in libs:
+            res[lib] = sigmoid(1)
+
+
+    print('libs found:')
+    print(res)
     return res
 
 
@@ -130,15 +132,16 @@ def searchLib(lines):#todo:后续要统计库里具体的方法
 
     Args:
         lines: 代码文本
+        libs: 代码中使用的库名
 
     Returns:
         res: dict,方法名为key，value=sigmoid(方法使用次数)
 
 """
-def searchMethod(lines):
+def searchMethod(lines,libs):
     #todo:排除用内置方法名定义的变量和方法
     res = {}
-    methods = getBuiltinMethods()
+    libsAndMethods = getLibsAndMethods()
     patterns=[]
     for line in lines:
         # 除去注释行
@@ -147,7 +150,12 @@ def searchMethod(lines):
             continue
         patterns.extend(splitLine(line))
 
-    res={ method:sigmoid(patterns.count(method))  for method in methods if method in patterns}
+    print('patterns found:')
+    print(patterns)
+
+    for lib in libs:
+        methods= list(libsAndMethods[lib])
+        res={ (lib+'.'+method):sigmoid(patterns.count(method))  for method in methods if method in patterns}
     return res
 
 
@@ -160,6 +168,7 @@ def searchMethod(lines):
         切分后的数组
 
 """
+# todo:不要自定义的方法、不要变量
 def splitLine(line):
     #操作符有的要转义，有的不用，测试清楚
     op = '[=\+\-\*/\[\]\(\)]'

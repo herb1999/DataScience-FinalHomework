@@ -153,6 +153,7 @@ def k_means(X, k, max_iters):
 """
 if __name__ == '__main__':
     getRecommendedLabel('2307')
+    print(dir())
 # stat = getStatistics('2307')
 # rated = getRated('2307')
 # X =pd\

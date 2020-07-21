@@ -23,10 +23,10 @@ def getRated(caseId):
     return pd.read_csv('../cases/'+caseId+'/rated.csv')
 
 def getLibs():
-    return list(pd.read_csv('../data/libs.csv'))
+    return list(pd.read_csv('../data/libs.csv').columns.values)
 
-def getBuiltinMethods():
-    return list(pd.read_csv('../data/built-in_methods.csv'))
+def getLibsAndMethods():
+    return list(pd.read_csv('../data/libs.csv'))
 
 def getStatistics(caseId):
     return pd.read_csv('../cases/' + caseId + '/statistics.csv')
@@ -34,10 +34,13 @@ def getStatistics(caseId):
 def sigmoid(x):
     return 1/(1 + np.exp(-x))
 
+#todo 过滤空行、注释，包括单行、多行注释、跟着代码的行后注释
+def clearCode(lines):
+    return lines
 
 
-
-
+if __name__ == '__main__':
+    print(getLibs())
 
 
 # X=[]
