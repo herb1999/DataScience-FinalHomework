@@ -20,16 +20,16 @@ def getFilePathList(caseId):
     return filePathList
 
 def getRated(caseId):
-    return pd.read_csv('../cases/'+caseId+'/rated.csv')
+    return pd.read_csv('../cases/'+caseId+'/rated.csv').iloc[:,1:]
 
 def getLibs():
     return list(pd.read_csv('../data/libs.csv').columns.values)
 
 def getLibsAndMethods():
-    return list(pd.read_csv('../data/libs.csv'))
+    return pd.read_csv('../data/libs.csv')
 
 def getStatistics(caseId):
-    return pd.read_csv('../cases/' + caseId + '/statistics.csv')
+    return pd.read_csv('../cases/' + caseId + '/statistics.csv').iloc[:,1:]
 
 def sigmoid(x):
     return 1/(1 + np.exp(-x))
@@ -41,6 +41,8 @@ def clearCode(lines):
 
 if __name__ == '__main__':
     print(getLibs())
+    print(getStatistics('2307'))
+    print(getRated('2307'))
 
 
 # X=[]

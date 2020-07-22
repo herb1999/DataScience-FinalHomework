@@ -36,31 +36,26 @@ def searchCase(caseId):
     for path in paths:
         with open(path+'/main.py', 'r', encoding='UTF-8') as f:
             lines = clearCode(f.readlines())
-            res=searchLib(lines)
-            if len(res)>0:
-                res['path']=path
-                results_lib.append(res)
-
-            res=searchMethod(lines)
+            libs=searchLib(lines) # 获取库
+            results_lib.extend(libs)
+            res=searchMethod(lines,libs)  # 获取方法
             if len(res)>0:
                 res['path'] = path
                 results_method.append(res)
     #库统计结果
-    results_lib=pd.DataFrame(results_lib)
-    # 内置方法统计结果
+    results_lib=set(results_lib)
+    # 方法统计结果
     results_method=pd.DataFrame(results_method)
-    # print('results_lib: ')
+    paths = results_method.path
+    results_method = results_method.drop('path', axis=1)
+    results_method.insert(0, 'path', paths)
+    results_method.set_index('path')
+    print('results_lib: ')
     print(results_lib)
-    # print('results_method: ')
+    print('results_method: ')
     print(results_method)
 
-    # 统计结果合并
-    df=pd\
-        .merge(results_lib, results_method, on='path',how='outer')\
-        .fillna(0)\
-        .set_index('path')
-    print(df)
-    df.to_csv('../cases/' + caseId + '/statistics.csv')
+    results_method.to_csv('../cases/' + caseId + '/statistics.csv')
     print('-------------CASE 统计完成--------------------')
 
 
@@ -80,12 +75,11 @@ def searchCode(path):
     results_candy = []
     with open(path+'/main.py', 'r', encoding='UTF-8') as f:
         lines = f.readlines()
-        res = searchLib(lines)
-        results_lib=pd.Series(res)
-
-        res = searchMethod(lines)
+        results_lib = searchLib(lines)
+        res = searchMethod(lines,results_lib)
         results_method=pd.Series(res)
 
+    results_lib = pd.Series(results_lib)
     print(results_lib)
     print(results_method)
     # 统计结果合并
@@ -116,10 +110,12 @@ def searchLib(lines):#todo:后续要统计库里具体的方法
         if 'from' in line:
             lib = patterns[patterns.index('from') + 1]
         # import xxx 的形式
-        else:
+        elif 'import' in line:
             lib = patterns[patterns.index('import') + 1]
+        else:
+            continue
 
-        if lib in libs:
+        if lib in libs and len(lib)>0:
             res[lib] = sigmoid(1)
 
 
@@ -128,7 +124,7 @@ def searchLib(lines):#todo:后续要统计库里具体的方法
     return res
 
 
-"""内置方法使用情况
+"""方法使用情况
 
     Args:
         lines: 代码文本
@@ -155,7 +151,10 @@ def searchMethod(lines,libs):
 
     for lib in libs:
         methods= list(libsAndMethods[lib])
-        res={ (lib+'.'+method):sigmoid(patterns.count(method))  for method in methods if method in patterns}
+        for method in methods:
+            if method in patterns:
+                res[(lib+'.'+method)]=sigmoid(patterns.count(method))
+
     return res
 
 
@@ -201,12 +200,12 @@ def splitLine(line):
                 list.append(func)
     return list
 if __name__ == '__main__':
-    # for i in range(0,48):
-    #     print("第",i,"道题的方法使用")
-    #     with open('../cases/2307/'+str(i)+'/main.py', 'r',encoding='UTF-8') as f:
-    #         lines = f.readlines()
-    #         for line in lines:
-    #             l=splitLine(line)
-    #             if(l!=[]):
-    #                 print(l)
+    for i in range(0,48):
+        print("第",i,"道题的方法使用")
+        with open('../cases/2307/'+str(i)+'/main.py', 'r',encoding='UTF-8') as f:
+            lines = f.readlines()
+            for line in lines:
+                l=splitLine(line)
+                if(l!=[]):
+                    print(l)
     searchCase('2307')

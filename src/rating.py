@@ -179,7 +179,10 @@ def rate(caseId):
     df.to_csv('../cases/'+caseId+'/rated.csv')
     print('-------------代码评分完成--------------------')
 
-rate('2307')
+
+if __name__ == '__main__':
+
+    rate('2307')
 
 
 

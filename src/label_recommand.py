@@ -89,7 +89,7 @@ def getRecommendedLabel(caseId):
     print(np.argmin(rate))
     print(clusters[int(np.argmin(rate))])
     draw_after_kmeans(X_new,label,k)
-    sums = clusters[int(np.argmin(rate))].sum().sort_values(ascending=False)
+    sums = clusters[int(np.argmin(rate))].drop('rate',axis=1).sum().sort_values(ascending=False)
     # stat.sort_values()
     print(sums)
     print('-------------标签推荐完成--------------------')
