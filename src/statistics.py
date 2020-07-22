@@ -100,7 +100,7 @@ def searchCode(path):
 """
 # todo:找个地方全局sigmoid一下
 # todo: as 的检测
-def searchLib(lines):#todo:后续要统计库里具体的方法
+def searchLib(lines):
     res = {'std':sigmoid(1)}
     libs = getLibs()
     for line in lines:
@@ -167,7 +167,7 @@ def searchMethod(lines,libs):
         切分后的数组
 
 """
-# todo:不要自定义的方法、不要变量
+# todo:不要自定义的方法、不要变量 zjy
 def_list = [] #记录自定义方法名
 def_normal=['&','|','~','and','or','elif','if','else','\"']
 # 返回使用的库的方法名

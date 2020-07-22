@@ -72,5 +72,4 @@ if __name__ == "__main__":
     plt.ylabel('次数')
     plt.xlabel('库名')
     plt.show()
-    # todo 库名和方法混杂了 导入不等于使用?
     print(result)
