@@ -14,18 +14,38 @@ import sklearn
 from scipy.cluster.vq import vq, kmeans, whiten
 from sklearn.decomposition import PCA
 
-def draw_after_kmeans(X,label,k):
+
+def draw_after_kmeans(X, label, k):
     idx = []  # 分类结果，为X中的行下标
     clusters = []  # 使用下标分开的dataFrames
     for i in range(k):
         idx.append(np.where(label == i)[0])
         clusters.append(X[idx[i], :])
     fig, ax = plt.subplots(figsize=(9, 6))
-    colors=['r','g','b','c']
+    colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k']
     for i in range(k):
-        ax.scatter(clusters[i][:, 0], clusters[i][:, 1], s=30, color=colors[i], label='Cluster '+str(i+1))
+        ax.scatter(clusters[i][:, 0], clusters[i][:, 1], s=30, color=colors[i], label='Cluster ' + str(i + 1))
     ax.legend()
     plt.show()
+
+
+def find_best_k(lossList, minK):
+    maxK = minK + len(lossList)
+    kList = range(minK, maxK)
+    plt.plot(kList,lossList)
+    plt.show()
+
+    cosVals = []
+    for i in range(1, len(lossList) - 1):
+        v1 = [1, lossList[i] - lossList[i - 1]]
+        v2 = [1, lossList[i+1] - lossList[i]]
+        cosVals.append(cosine_similarity(v1,v2))
+
+    plt.plot(kList[1:-1],cosVals)
+    plt.show()
+    idx=int(np.argmin(cosVals))+1
+    print(idx)
+    return kList[idx]
 
 """获取推荐标签
 
@@ -51,7 +71,8 @@ def getRecommendedLabel(caseId):
     # print('-------------标签推荐完成--------------------')
     # return sums[:4]
 
-    k = 4
+    minK = 2
+    maxK = 7
 
     stat = getStatistics(caseId)
     rated = getRated(caseId)
@@ -71,14 +92,25 @@ def getRecommendedLabel(caseId):
     plt.show()
 
     # 聚类部分
-    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.vq.kmeans.html#scipy.cluster.vq.kmeans
-    centriods, loss = kmeans(X_new, k_or_guess=k)  # todo:之后根据loss优化k值
-    label = vq(X_new, centriods)[0]
+    centroidsList = []
+    lossList = []
+    for k in range(minK, maxK + 1):
+        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.vq.kmeans.html#scipy.cluster.vq.kmeans
+        centriods, loss = kmeans(X_new, k_or_guess=k)
+        lossList.append(loss)
+        centroidsList.append(centriods)
+
+    # 肘部优化法确定最佳K值
+    bestK=find_best_k(lossList, minK)
+    print("bestK:  "+str(bestK))
+    bestCentroids = centroidsList[bestK-minK]
+
+    label = vq(X_new, bestCentroids)[0]
     print(label)
     idx = []  # 分类结果，为X中的行下标
     clusters = []  # 使用下标分开的dataFrames
     rate = []  # 各cluster的平均评分
-    for i in range(k):
+    for i in range(bestK):
         idx.append(np.where(label == i)[0])
         clusters.append(X.iloc[idx[i], :])
         rate.append(np.sum(clusters[i]['rate']) / len(idx[i]))
@@ -88,8 +120,8 @@ def getRecommendedLabel(caseId):
     print(rate)
     print(np.argmin(rate))
     print(clusters[int(np.argmin(rate))])
-    draw_after_kmeans(X_new,label,k)
-    sums = clusters[int(np.argmin(rate))].drop('rate',axis=1).sum().sort_values(ascending=False)
+    draw_after_kmeans(X_new, label, bestK)
+    sums = clusters[int(np.argmin(rate))].drop('rate', axis=1).sum().sort_values(ascending=False)
     # stat.sort_values()
     print(sums)
     print('-------------标签推荐完成--------------------')
