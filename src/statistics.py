@@ -8,7 +8,8 @@ from src.util import *
 import pandas as pd
 import numpy as np
 from math import cos
-
+def cos(n):
+    return n
 # todo:内置类的方法统计
 """统计case中所有代码的库、方法、语法糖。
 
@@ -167,7 +168,7 @@ def searchMethod(lines,libs):
         切分后的数组
 
 """
-# todo:不要自定义的方法、不要变量 zjy
+
 def_list = [] #记录自定义方法名
 def_normal=['&','|','~','and','or','elif','if','else','\"']
 # 返回使用的库的方法名
@@ -200,12 +201,13 @@ def splitLine(line):
                 list.append(func)
     return list
 if __name__ == '__main__':
-    for i in range(0,48):
-        print("第",i,"道题的方法使用")
-        with open('../cases/2307/'+str(i)+'/main.py', 'r',encoding='UTF-8') as f:
-            lines = f.readlines()
-            for line in lines:
-                l=splitLine(line)
-                if(l!=[]):
-                    print(l)
-    searchCase('2307')
+    # for i in range(0,48):
+    #     print("第",i,"道题的方法使用")
+    #     with open('../cases/2307/'+str(i)+'/main.py', 'r',encoding='UTF-8') as f:
+    #         lines = f.readlines()
+    #         for line in lines:
+    #             l=splitLine(line)
+    #             if(l!=[]):
+    #                 print(l)
+    # searchCase('2307')
+    print(cos(1))
