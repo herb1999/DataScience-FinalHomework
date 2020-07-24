@@ -56,7 +56,7 @@ def getStatistics(caseId):
 def sigmoid(x):
     return 1/(1 + np.exp(-x))
 
-#todo 过滤空行、注释，包括单行、多行注释、跟着代码的行后注释  zjy
+
 """过滤空行、注释，包括单行、多行注释、跟着代码的行后注释
 
 Args:

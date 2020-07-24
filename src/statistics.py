@@ -103,6 +103,7 @@ def searchCode(path):
 # todo: as 的检测
 def searchLib(lines):
     res = {'std':sigmoid(1)}
+    map={} #原名：新名
     libs = getLibs()
     for line in lines:
         patterns = re.split(r'\s+', line)
@@ -110,19 +111,22 @@ def searchLib(lines):
         # from xxx import xxx 的形式
         if 'from' in line:
             lib = patterns[patterns.index('from') + 1]
+            if 'as' in line:
+                func=patterns[patterns.index('import')+1]
+                map.update({lib+"."+func:patterns[patterns.index('as')+1]})
         # import xxx 的形式
         elif 'import' in line:
             lib = patterns[patterns.index('import') + 1]
+            if 'as' in line:
+                map.update({lib:patterns[patterns.index('as')+1]})
         else:
             continue
-
+        print(lib)
         if lib in libs and len(lib)>0:
             res[lib] = sigmoid(1)
-
-
     print('libs found:')
     print(res)
-    return res
+    return res,map
 
 
 """方法使用情况
@@ -210,4 +214,6 @@ if __name__ == '__main__':
     #             if(l!=[]):
     #                 print(l)
     # searchCase('2307')
-    print(cos(1))
+    with open('../cases/2307/24/main.py','r',encoding='UTF-8') as f:
+        lines=f.readlines()
+        print(searchLib(lines))
