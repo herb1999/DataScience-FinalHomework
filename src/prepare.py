@@ -40,9 +40,13 @@ def downloadAndUnzip(caseId):
         cases = user[1]['cases']
         for case in cases:
             if case['case_id'] == caseId:
+                if (len(case['upload_records']) == 0):
+                    continue
+
                 count+=1
                 print(case["case_id"], case["case_type"],count)
                 #获取最后一次提交的url
+
                 url = urllib.parse.quote(case['upload_records'][-1]['code_url'], safe=string.printable)
                 url = url.replace(' ', '%20')
                 # filenameList.append(os.path.basename(url))
@@ -82,5 +86,31 @@ def downloadAndUnzip(caseId):
     return filePathList
 
 
+"""获取所有caseId和原题标题.
+
+    Returns:
+        1.返回数组，每个item是二元tuple，(caseId, caseName)
+"""
+def findAllCases():
+    f = open('../data/test_data.json', encoding='utf-8')
+    data = json.loads(f.read())
+    # print(data)
+
+    caseIds = []
+    caseNames = []
+    count=0
+    for user in data.items():
+        cases = user[1]['cases']
+        for case in cases:
+            if case['case_id'] not in caseIds:
+                caseIds.append(case['case_id'])
+                caseNames.append(os.path.basename(case['case_zip']).split('_')[0])
+    res=list(zip(caseIds,caseNames))
+    with open('../data/allCases.json', 'w')as f:
+        json.dump(res, f)
+    return res
+
 # caseId='2307'
 # print(downloadAndUnzip(caseId))
+if __name__ == '__main__':
+    print(findAllCases())

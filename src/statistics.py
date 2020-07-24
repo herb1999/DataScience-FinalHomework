@@ -7,9 +7,6 @@ import re
 from src.util import *
 import pandas as pd
 import numpy as np
-from math import cos
-def cos(n):
-    return n
 # todo:内置类的方法统计
 """统计case中所有代码的库、方法、语法糖。
 
@@ -40,9 +37,9 @@ def searchCase(caseId):
             libs=searchLib(lines) # 获取库
             results_lib.extend(libs)
             res=searchMethod(lines,libs)  # 获取方法
-            if len(res)>0:
-                res['path'] = path
-                results_method.append(res)
+            # if len(res)>0:
+            res['path'] = path
+            results_method.append(res)
     #库统计结果
     results_lib=set(results_lib)
     # 方法统计结果
@@ -74,7 +71,7 @@ def searchCode(path):
     results_lib = []
     results_method = []
     results_candy = []
-    with open(path+'/main.py', 'r', encoding='UTF-8') as f:
+    with open(path, 'r', encoding='UTF-8') as f:
         lines = f.readlines()
         results_lib = searchLib(lines)
         res = searchMethod(lines,results_lib)
@@ -108,10 +105,10 @@ def searchLib(lines):
         patterns = re.split(r'\s+', line)
         lib = ''
         # from xxx import xxx 的形式
-        if 'from' in line:
+        if 'from' in patterns:
             lib = patterns[patterns.index('from') + 1]
         # import xxx 的形式
-        elif 'import' in line:
+        elif 'import' in patterns:
             lib = patterns[patterns.index('import') + 1]
         else:
             continue
@@ -209,5 +206,4 @@ if __name__ == '__main__':
     #             l=splitLine(line)
     #             if(l!=[]):
     #                 print(l)
-    # searchCase('2307')
-    print(cos(1))
+    searchCase('2307')

@@ -34,12 +34,18 @@ def cosine_similarity(x, y, norm=False):
 
     return 0.5 * cos + 0.5 if norm else cos  # 归一化到[0, 1]区间内
 def getFilePathList(caseId):
-    filePathList=[]
     with open('../data/filename.json', 'r')as f:
         res = f.read()
         data = json.loads(res)
         filePathList=data[caseId]
     return filePathList
+
+def getAllCases():
+    allCases = []
+    with open('../data/allCases.json', 'r')as f:
+        res = f.read()
+        allCases = json.loads(res)
+    return allCases
 
 def getRated(caseId):
     return pd.read_csv('../cases/'+caseId+'/rated.csv').iloc[:,1:]
@@ -56,6 +62,11 @@ def getStatistics(caseId):
 def sigmoid(x):
     return 1/(1 + np.exp(-x))
 
+def getRecommendCodePaths(caseId):
+    with open('../cases/' + caseId + '/recommendCode.json', 'r')as f:
+        res = f.read()
+        data = json.loads(res)
+    return data
 #todo 过滤空行、注释，包括单行、多行注释、跟着代码的行后注释  zjy
 """过滤空行、注释，包括单行、多行注释、跟着代码的行后注释
 
@@ -71,9 +82,10 @@ def clearCode(lines):
 
 
 if __name__ == '__main__':
-    print(getLibs())
-    print(getStatistics('2307'))
-    print(getRated('2307'))
+    # print(getLibs())
+    # print(getStatistics('2307'))
+    # print(getRated('2307'))
+    print(getAllCases())
 
 
 # X=[]

@@ -53,7 +53,8 @@ def find_best_k(lossList, minK):
         caseId: 题目ID
 
     Returns:
-        使用量靠前的标签
+        labels,标签
+        bestCodePaths,聚类分开的dataFrames中评分最高的code的path
 
 """
 # todo: 可能漏掉使用少但是关键的label
@@ -112,17 +113,34 @@ def getRecommendedLabel(caseId):
         clusters.append(X.iloc[idx[i], :])
         rate.append(np.sum(clusters[i]['rate']) / len(idx[i]))
     # print(X[np.where(label == 0)[0], :])
-    print(X)
-    print(clusters[0])
-    print(rate)
-    print(np.argmin(rate))
-    print(clusters[int(np.argmin(rate))])
+    # print(X)
+    # print(clusters[0])
+    # print(rate)
+    # print(np.argmin(rate))
+    # print(clusters[int(np.argmin(rate))])
+
     draw_after_kmeans(X_new, label, bestK)
-    sums = clusters[int(np.argmin(rate))].drop('rate', axis=1).sum().sort_values(ascending=False)
+    labels = clusters[int(np.argmin(rate))].drop('rate', axis=1).sum().sort_values(ascending=False)
     # stat.sort_values()
-    print(sums)
+    print(labels)
+    # 保存推荐结果
+    with open('../cases/'+caseId+'/recommendLabel.json', 'w')as f:
+        json.dump(dict(labels), f)
+
+    # 获取各个簇中评分最高的代码路径
+    bestCodePaths=[]
+    for cluster in clusters:
+        print('cluster')
+        print(cluster)
+        # dataFrame以path为idx，argmax直接得到path
+        bestCodePaths.append(np.argmin(cluster['rate']))
+    print('bestCodePaths: ')
+    print(bestCodePaths)
+    # 保存代码路径
+    with open('../cases/' + caseId + '/bestCodes.json', 'w')as f:
+        json.dump(bestCodePaths, f)
     print('-------------标签推荐完成--------------------')
-    return sums[:4]
+    return labels,bestCodePaths
 
 
 # 目的：值得推荐的代码可能有十几个，也可能只有几个，要靠聚类区分出最优秀的一类代码
