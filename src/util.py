@@ -78,7 +78,28 @@ Returns:
 
 """
 def clearCode(lines):
-    return lines
+    rows = False
+    res = []
+    for line in lines:
+        # 多行注释
+        line = line.strip()
+        if line=='':
+            continue
+        if (rows):
+            if (line.find("'''") != -1):
+                rows = False
+        else:
+            idx = line.find("'''")
+            if idx != -1:
+                rows = True
+                continue
+            idx = line.find('#')
+            if idx != -1:
+                if idx == 0:
+                    continue
+                line = line[0:idx]
+            res.append(line)
+    return res
 
 
 if __name__ == '__main__':
@@ -86,6 +107,10 @@ if __name__ == '__main__':
     # print(getStatistics('2307'))
     # print(getRated('2307'))
     print(getAllCases())
+    with open('../cases/2307/24/main.py', 'r', encoding='UTF-8') as f:
+        lines = f.readlines()
+        print(clearCode(lines))
+
 
 
 # X=[]

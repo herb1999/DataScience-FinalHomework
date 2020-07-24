@@ -6,7 +6,6 @@ function_name=variable+'|'+lambda_name
 Negative='\s*-?\d+\s*'
 a_list='\[{}(,{})*\]'.format(Negative,Negative)
 
-#todo:zjy
 
 # 1.选最大值
 re_max1=re.compile(r'^'+variable+'\=\s*max\(.*\)$')
@@ -16,8 +15,7 @@ re_max3=re.compile(r'^'+variable+'\=\s*\[.*\]\[.*\]')
 # 2.值交换 元组赋值
 re_value_change=re.compile(r'^{}(,{})*\=.+'.format(variable,variable))
 
-# 3.循环与else匹配用于在循环正常结束和循环条件不成立时执行
-# todo
+
 
 # 4.切片操作
 re_split1=re.compile(r'^{}={}\[{}(:{})+\]'.format(variable,variable,Negative,Negative))
