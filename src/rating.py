@@ -180,6 +180,17 @@ def rate(caseId):
     df.to_csv('../cases/'+caseId+'/rated.csv')
     print('-------------代码评分完成--------------------')
 
+"""代码容量度量。
+
+    Args:
+        lines: 代码
+
+    Returns:
+        代码容量度量值
+
+"""
+def Helstead(lines):
+    return 0
 
 if __name__ == '__main__':
 

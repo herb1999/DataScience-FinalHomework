@@ -96,7 +96,7 @@ def searchCode(path):
 # todo: as 的检测
 def searchLib(lines):
     res = ['std']
-    map={} #新名：原名
+    asMap={} #新名：原名
     libs = getLibs()
     for line in lines:
         patterns = re.split(r'\s+', line)
@@ -104,14 +104,14 @@ def searchLib(lines):
         # from xxx import xxx 的形式
         if 'from' in patterns:
             lib = patterns[patterns.index('from') + 1]
-            if 'as' in line:
+            if 'as' in patterns:
                 func=patterns[patterns.index('import')+1]
-                map.update({patterns[patterns.index('as')+1]:lib+"."+func})
+                asMap.update({patterns[patterns.index('as')+1]:lib+"."+func})
         # import xxx 的形式
         elif 'import' in patterns:
             lib = patterns[patterns.index('import') + 1]
-            if 'as' in line:
-                map.update({lib:patterns[patterns.index('as')+1]})
+            if 'as' in patterns:
+                asMap.update({lib:patterns[patterns.index('as')+1]})
         else:
             continue
         print(lib)
@@ -119,7 +119,7 @@ def searchLib(lines):
             res.append(lib)
     print('libs found:')
     print(res)
-    return res,map
+    return res,asMap
 
 
 """方法使用情况
