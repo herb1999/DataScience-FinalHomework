@@ -7,6 +7,7 @@ import re
 from src.util import *
 import pandas as pd
 import numpy as np
+
 # todo:内置类的方法统计
 """统计case中所有代码的库、方法、语法糖。
 
@@ -17,8 +18,9 @@ import numpy as np
         得到以代码路径为索引，统计对象为列标签的dataFrame，结果保存到'../cases/' + caseId + '/statistics.csv'
         
 """
-def searchCase(caseId):
 
+
+def searchCase(caseId):
     print('-------------CASE 统计开始--------------------')
     rated = getRated(caseId)
     paths = list(rated.sort_values(by='rate')['path'])
@@ -27,23 +29,22 @@ def searchCase(caseId):
     # libs = getLibs()
     # print(libs)
 
-
     results_lib = []
     results_method = []
     results_candy = []
     for path in paths:
-        with open(path+'/main.py', 'r', encoding='UTF-8') as f:
+        with open(path + '/main.py', 'r', encoding='UTF-8') as f:
             lines = clearCode(f.readlines())
-            libs=searchLib(lines) # 获取库
+            libs,asMethodMap = searchLib(lines)  # 获取库
             results_lib.extend(libs)
-            res=searchMethod(lines,libs)  # 获取方法
+            res = searchMethod(lines, libs)  # 获取方法
             # if len(res)>0:
             res['path'] = path
             results_method.append(res)
-    #库统计结果
+    # 库统计结果
 
     # 方法统计结果
-    results_method=pd.DataFrame(results_method)
+    results_method = pd.DataFrame(results_method)
     paths = results_method.path
     results_method = results_method.drop('path', axis=1)
     results_method.insert(0, 'path', paths)
@@ -66,6 +67,8 @@ def searchCase(caseId):
         统计对象为列标签，使用次数为值的Series
 
 """
+
+
 def searchCode(path):
     print('-------------CODE 统计开始--------------------')
     results_lib = []
@@ -73,10 +76,9 @@ def searchCode(path):
     results_candy = []
     with open(path, 'r', encoding='UTF-8') as f:
         lines = f.readlines()
-        results_lib,asMap = searchLib(lines)
-        res = searchMethod(lines,results_lib)
-        results_method=pd.Series(res)
-
+        results_lib, asMap = searchLib(lines)
+        res = searchMethod(lines, results_lib)
+        results_method = pd.Series(res)
 
     print(results_method)
     print('-------------CODE 统计完成--------------------')
@@ -89,14 +91,18 @@ def searchCode(path):
         lines: 代码文本
 
     Returns:
-        res: dict,库名为key，value=1
+        res: 检测到的库名，list
+        asMethodMap: 用as引入的方法名，dict，key=新名  value=原名
 
 """
+
+
 # todo:找个地方全局sigmoid一下
 # todo: as 的检测
 def searchLib(lines):
     res = ['std']
-    asMap={} #新名：原名
+    asLibMap = {}  # 新名：原名
+    asMethodMap = {}  # 新名：原名
     libs = getLibs()
     for line in lines:
         patterns = re.split(r'\s+', line)
@@ -105,21 +111,23 @@ def searchLib(lines):
         if 'from' in patterns:
             lib = patterns[patterns.index('from') + 1]
             if 'as' in patterns:
-                func=patterns[patterns.index('import')+1]
-                asMap.update({patterns[patterns.index('as')+1]:lib+"."+func})
+                func = patterns[patterns.index('import') + 1]
+                asMethodMap.update({patterns[patterns.index('as') + 1]: lib + "." + func})
         # import xxx 的形式
         elif 'import' in patterns:
             lib = patterns[patterns.index('import') + 1]
-            if 'as' in patterns:
-                asMap.update({lib:patterns[patterns.index('as')+1]})
+            # if 'as' in patterns:
+            #     asLibMap.update({lib: patterns[patterns.index('as') + 1]})
         else:
             continue
         print(lib)
-        if lib in libs and len(lib)>0:
+        if lib in libs and len(lib) > 0:
             res.append(lib)
     print('libs found:')
     print(res)
-    return res,asMap
+    print('asMethodMap')
+    print(asMethodMap)
+    return res, asMethodMap
 
 
 """方法使用情况
@@ -132,11 +140,13 @@ def searchLib(lines):
         res: dict,方法名为key，value=sigmoid(方法使用次数)
 
 """
-def searchMethod(lines,libs):
-    #todo:排除用内置方法名定义的变量和方法
+
+
+def searchMethod(lines, libs):
+    # todo:排除用内置方法名定义的变量和方法
     res = {}
     libsAndMethods = getLibsAndMethods()
-    patterns=[]
+    patterns = []
     for line in lines:
         # 除去注释行
         line = line.strip()
@@ -148,10 +158,10 @@ def searchMethod(lines,libs):
     print(patterns)
 
     for lib in libs:
-        methods= list(libsAndMethods[lib])
+        methods = list(libsAndMethods[lib])
         for method in methods:
             if method in patterns:
-                res[(lib+'.'+method)]=sigmoid(patterns.count(method))
+                res[(lib + '.' + method)] = sigmoid(patterns.count(method))
 
     return res
 
@@ -166,37 +176,41 @@ def searchMethod(lines,libs):
 
 """
 
-def_list = [] #记录自定义方法名
-def_normal=['&','|','~','and','or','elif','if','else','\"']
+def_list = []  # 记录自定义方法名
+def_normal = ['&', '|', '~', 'and', 'or', 'elif', 'if', 'else', '\"']
+
+
 # 返回使用的库的方法名
 # 假设方法名都是在(前面  先以除(外分隔符分割每一行代码
 def splitLine(line):
     op = '[=\+\-\*/\[\]\)<>:,]'
     variable = '\s*[a-zA-Z_]+?[\w_]*\s*'
-    if(line.strip().startswith("#")):
+    if (line.strip().startswith("#")):
         return []
-    res=(re.split(op,line))
+    res = (re.split(op, line))
     re_op1 = r'{}\.{}'.format(variable, variable)
     re_op = r'({})'.format(variable, variable)
-    re_def=r'def({})'.format(variable)
+    re_def = r'def({})'.format(variable)
     list = []
     for item in res:
-        cur = re.match(re_def,item)
+        cur = re.match(re_def, item)
         if (cur != None):
             def_list.append(cur.group(1).strip())
             continue
-        tmp=re.split('\(',item)
+        tmp = re.split('\(', item)
         if (len(tmp) <= 1):
             continue
-        for i in range(0,len(tmp)-1):
+        for i in range(0, len(tmp) - 1):
             func = tmp[i].strip()
-            if (len(func.split(" ")) > 1)|(len(func)==0):
+            if (len(func.split(" ")) > 1) | (len(func) == 0):
                 continue
             if (func.startswith('.')):
                 func = func[1:]
-            if(func not in def_list and func not in def_normal):
+            if (func not in def_list and func not in def_normal):
                 list.append(func)
     return list
+
+
 if __name__ == '__main__':
     # for i in range(0,48):
     #     print("第",i,"道题的方法使用")
@@ -209,5 +223,5 @@ if __name__ == '__main__':
     # searchCase('2307')
     # with open('../cases/2307/24/main.py','r',encoding='UTF-8') as f:
     with open('../cases/try.py', 'r', encoding='UTF-8') as f:
-        lines=f.readlines()
+        lines = f.readlines()
         print(searchLib(lines))
