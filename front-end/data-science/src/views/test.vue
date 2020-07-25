@@ -62,7 +62,8 @@ recommendCode
       "getCaseDescription",
       "allCases",
       "commitCode",
-      "getRecommendLabel"
+      "getRecommendLabel",
+      "getRecommendCodes"
     ]),
     onCommitCode() {
       this.commitCode({
@@ -71,8 +72,8 @@ recommendCode
       });
     },
     onGetRecommendLabel() {},
-    onGetRecommendCode() {
-      
+    async onGetRecommendCode() {
+      await this.getRecommendCodes(this.caseId)
       this.modalVisible=true
     },
     onHideModal(){

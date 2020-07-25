@@ -18,7 +18,7 @@ export default {
   },
   props:['visible'],
   async created(){
-    await this.getRecommendCodes(this.caseId)
+    
   },
   computed:{
     ...mapGetters(["recommendCodes"]),

@@ -60,17 +60,19 @@ def getRecommendedCode(caseId):
     cor=[]
     for i in range(stat.shape[0]-1):
         v2=list(stat.iloc[i,1:])
+        print(v1)
+        print(v2)
         cor.append(cosine_similarity(v1,v2))
     cor.append(1)
     # print(cor)
     stat['cor']=cor
-    stat=stat.sort_values(by='cor',ascending=False)
+    stat=stat.iloc[:-1].sort_values(by='cor',ascending=False)
     print(stat)
     # print(list(stat.iloc[1,:]))
-    print('最相似 : '+stat.iloc[1]['path'])
+    print('最相似 : '+stat.iloc[0]['path'])
     print('最不相似 : ' + stat.iloc[-1]['path'])
     print('-------------代码推荐完成--------------------')
-    return stat.iloc[1:]['path']
+    return stat['path']
 
 
 

@@ -41,7 +41,7 @@ def searchCase(caseId):
             res['path'] = path
             results_method.append(res)
     #库统计结果
-    results_lib=set(results_lib)
+
     # 方法统计结果
     results_method=pd.DataFrame(results_method)
     paths = results_method.path
@@ -73,18 +73,14 @@ def searchCode(path):
     results_candy = []
     with open(path, 'r', encoding='UTF-8') as f:
         lines = f.readlines()
-        results_lib = searchLib(lines)
+        results_lib,asMap = searchLib(lines)
         res = searchMethod(lines,results_lib)
         results_method=pd.Series(res)
 
-    results_lib = pd.Series(results_lib)
-    print(results_lib)
+
     print(results_method)
-    # 统计结果合并
-    res = pd.concat([results_method,results_lib])
-    print('res',res)
     print('-------------CODE 统计完成--------------------')
-    return res
+    return results_method
 
 
 """统计库使用情况 
@@ -99,7 +95,7 @@ def searchCode(path):
 # todo:找个地方全局sigmoid一下
 # todo: as 的检测
 def searchLib(lines):
-    res = {'std':sigmoid(1)}
+    res = ['std']
     map={} #新名：原名
     libs = getLibs()
     for line in lines:
@@ -120,7 +116,7 @@ def searchLib(lines):
             continue
         print(lib)
         if lib in libs and len(lib)>0:
-            res[lib] = sigmoid(1)
+            res.append(lib)
     print('libs found:')
     print(res)
     return res,map
