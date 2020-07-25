@@ -12,7 +12,6 @@ from src.util import *
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-
 """读取目标代码的测试结果的json文件。
 
     Args:
@@ -115,13 +114,15 @@ def calcuResults(caseId):
         lineNum=0
         with open(pyPath,'r',encoding='UTF-8') as f:
             lines=f.readlines()
-            for line in lines:
-                # 除去注释行
-                realLine = line.lstrip()
-                if realLine.startswith('#'):
-                    continue
-                if len(line)>1:
-                    lineNum+=1
+            # for line in lines:
+            #     # 除去注释行
+            #     realLine = line.lstrip()
+            #     if realLine.startswith('#'):
+            #         continue
+            #     if len(line)>1:
+            #         lineNum+=1
+            lines=clearCode(lines)
+            lineNum=len(lines)
         testRes['codeLines']=lineNum
 
         resPath = filePath + '/result.json'
