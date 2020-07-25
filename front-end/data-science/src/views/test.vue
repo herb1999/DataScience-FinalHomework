@@ -24,7 +24,7 @@
       <div class="button-div">
         <a-button type="primary" @click="onCommitCode">提交代码</a-button>
         <a-divider type="vertical" />
-        <a-button type="primary" @click="onGetRecommendCode">推荐代码</a-button>
+        <a-button type="primary" @click="onGetRecommendCode" :disabled="!canGetCode">推荐代码</a-button>
       </div>
 
       <div class="code-div">
@@ -43,6 +43,7 @@ export default {
     return {
       code: "",
       modalVisible:false,
+      canGetCode:false
     };
   },
   name: "test",
@@ -70,6 +71,7 @@ recommendCode
         caseId: this.caseId,
         code: this.code,
       });
+      this.canGetCode=true
     },
     onGetRecommendLabel() {},
     async onGetRecommendCode() {
