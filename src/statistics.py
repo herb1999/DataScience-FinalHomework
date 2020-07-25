@@ -34,7 +34,7 @@ def searchCase(caseId):
     for path in paths:
         with open(path+'/main.py', 'r', encoding='UTF-8') as f:
             lines = clearCode(f.readlines())
-            libs=searchLib(lines) # 获取库
+            libs,asmap=searchLib(lines) # 获取库
             results_lib.extend(libs)
             res=searchMethod(lines,libs)  # 获取方法
             # if len(res)>0:
@@ -71,7 +71,7 @@ def searchCode(path):
     results_lib = []
     results_method = []
     results_candy = []
-    with open(path, 'r', encoding='UTF-8') as f:
+    with open(path, 'r', encoding='unicode_escape') as f:
         lines = f.readlines()
         results_lib,asMap = searchLib(lines)
         res = searchMethod(lines,results_lib)
