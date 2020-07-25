@@ -1,11 +1,7 @@
 <template>
   <div>
     <a-modal v-model="visible" title="推荐代码" @cancel="onHideModal" :footer="null" :width="700">
-      <pre class="code" v-for="code in recommendCodes" :key="code">
-        <code>{{code}}</code>
-      </pre>
-
-      <a-divider/>
+      <pre v-for="code in recommendCodes" :key="code">{{code}}</pre>
     </a-modal>
   </div>
 </template>

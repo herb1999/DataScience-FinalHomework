@@ -74,7 +74,7 @@ def searchCode(path):
     results_lib = []
     results_method = []
     results_candy = []
-    with open(path, 'r', encoding='UTF-8') as f:
+    with open(path, 'r', encoding='unicode_escape') as f:
         lines = f.readlines()
         results_lib, asMap = searchLib(lines)
         res = searchMethod(lines, results_lib)
