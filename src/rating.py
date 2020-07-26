@@ -45,7 +45,7 @@ def calcuResults(caseId):
     casePath = filePathList[1] + '/.mooctest/testCases.json'
 
     for filePath in filePathList:
-
+        print('testing '+filePath)
 
         #学生代码路径
         pyPath= filePath +'/main.py'
@@ -53,7 +53,8 @@ def calcuResults(caseId):
         res = f.read()
         data = json.loads(res)
         caseNum=len(data)
-        testRes = {'runningTime': [], 'codeLines': 0, 'casesResults': [],'runningTimeAvg':0}
+        testRes = {'runningTime': [], 'volnum': 0, 'casesResults': [],'runningTimeAvg':0}
+
         #创建用于重定向输入的txt文件
         for idx,case in enumerate(data):
             inputPath=filePath+'/input'+str(idx)+'.txt'
@@ -84,20 +85,29 @@ def calcuResults(caseId):
             else:
                 testRes['casesResults'].append(0)
 
-        #统计代码行数
-        lineNum=0
+        # 面向用例编程的检测
+        #   1.获取测试用例的全部输出
+        outputs=[case['output'] for case in data]
+        #   2.检测代码中有没有全部的测试用例
         with open(pyPath,'r',encoding='UTF-8') as f:
             lines=f.readlines()
-            # for line in lines:
-            #     # 除去注释行
-            #     realLine = line.lstrip()
-            #     if realLine.startswith('#'):
-            #         continue
-            #     if len(line)>1:
-            #         lineNum+=1
             lines=clearCode(lines)
-            lineNum=len(lines)
-        testRes['codeLines']=lineNum
+            for line in lines:
+                for output in outputs:
+                    testStr1='print(\''+output[:-1]+'\')'
+                    testStr2 = 'print(\"' + output[:-1] + '\")'
+                    if testStr1 in line or testStr2 in line:
+                        testRes['casesResults'] = [0] * caseNum
+                        print('----------------------------------------cheater: ' + filePath)
+
+
+
+        #统计代码容量
+        with open(pyPath,'r',encoding='UTF-8') as f:
+            lines=f.readlines()
+            lines=clearCode(lines)
+            volnum=Helstead(lines)
+        testRes['volnum']=volnum
 
         resPath = filePath + '/result.json'
         with open(resPath, 'w')as f:
@@ -116,7 +126,7 @@ def calcuResults(caseId):
 """
 def rate(caseId):
     print('-------------代码评分--------------------')
-    results={'time':[],'lines':[],'path':[]}
+    results={'time':[],'volnums':[],'path':[]}
     filePathList=getFilePathList(caseId)
     for file in filePathList:
         data = checkResult(file)
@@ -125,17 +135,17 @@ def rate(caseId):
             continue
         results['path'].append(file)
         results['time'].append(data['runningTimeAvg'])
-        results['lines'].append(data['codeLines'])
+        results['volnums'].append(data['volnum'])
     # print(results)
     df=pd.DataFrame(results)
     # print(df)
     # 0-1标准化
     scaler = MinMaxScaler()
     df['time-std'] = scaler.fit_transform(df['time'].values.reshape(-1, 1))
-    df['lines-std'] = scaler.fit_transform(df['lines'].values.reshape(-1, 1))
+    df['volnums-std'] = scaler.fit_transform(df['volnums'].values.reshape(-1, 1))
     # print(df)
     # 评分
-    df['rate'] = df[['time-std', 'lines-std']].mean(axis=1)
+    df['rate'] = df[['time-std', 'volnums-std']].mean(axis=1)
     print(df)
     # 结果存入data/rated.csv
     print('rate')
@@ -236,10 +246,10 @@ def Helstead(lines):
             n1 -= 1
         N1-=op_count[special_[i]]*2
     n2 = len(dict(Counter(varibles)))
-    print(list(set(ops)),list(set(varibles)))
+    # print(list(set(ops)),list(set(varibles)))
     n=n1+n2
     N=N1+N2
-    print(N,n)
+    # print(N,n)
     return N*log2(n)
 
 if __name__ == '__main__':

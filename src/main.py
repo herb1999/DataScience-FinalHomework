@@ -10,9 +10,11 @@ if __name__ == '__main__':
     # todo:记一下哪个例子比较好用
     # 2908  F 8.5
 
-    caseId = '2179'
+    # 推荐代码 2176/63、34
+    # 面向用例 2176/1
+    caseId = '2176'
 
-    downloadAndUnzip(caseId)
+    # downloadAndUnzip(caseId)
     calcuResults(caseId)
     # rate(caseId)
     # searchCase(caseId)
