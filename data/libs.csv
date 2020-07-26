@@ -1,16 +1,16 @@
 sys,math,functools,collections,re,std,list,dict,tuple,str,int,set
 argv,e,cmp_to_key,namedtuple,search,all,append,fromkeys,tuple,lower,int,add
 exit,exp,partial,deque,match,any,count,get,,upper,,update
-getdefaultencoding,pi,total_ordering ,defaultdict,findall,bin,extend,setdefault,,swapcase,,remove
-setdefaultencoding,ceil,update_wrapper,OrderedDict ,split,chr,index,items,,capitalize,,discard
-getfilesystemencoding,floor,wraps,Counter,finditer,cmp,insert,keys,,capwords,,pop
-path,fabs,,,sub,complex,pop,values,,title,,clear
-version,trunc,,,,divmod,remove,update,,ljist,,
-platform,factorial ,,,,eval,reverse,pop,,rjust,,
-stdin,gcd,,,,enumerate,sort,popitem,,center,,
-stdout,log,,,,filter,clear,clear,,zfill,,
-stderr,log10,,,,format,copy,copy,,find,,
-,modf,,,,hash,,del,,index,,
+getdefaultencoding,pi,total_ordering ,defaultdict,findall,bin,extend,setdefault,,swapcase,,discard
+setdefaultencoding,ceil,update_wrapper,OrderedDict ,split,chr,index,items,,capitalize,,clear
+getfilesystemencoding,floor,wraps,Counter,finditer,cmp,insert,keys,,capwords,,
+path,fabs,,,sub,complex,pop,values,,title,,
+version,trunc,,,,divmod,remove,popitem,,ljist,,
+platform,factorial ,,,,eval,reverse,del,,rjust,,
+stdin,gcd,,,,enumerate,sort,,,center,,
+stdout,log,,,,filter,clear,,,zfill,,
+stderr,log10,,,,format,copy,,,find,,
+,modf,,,,hash,,,,index,,
 ,sqrt,,,,id,,,,xount,,
 ,pow,,,,isinstance,,,,replace,,
 ,sin,,,,issubclass,,,,split,,
