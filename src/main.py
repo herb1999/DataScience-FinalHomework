@@ -7,11 +7,14 @@ from src.statistics import *
 from src.label_recommand import *
 from src.code_recommand import *
 if __name__ == '__main__':
-    caseId = '2307'
+    # todo:记一下哪个例子比较好用
+    # 2908  F 8.5
 
-    downloadAndUnzip(caseId)
-    calcuResults(caseId)
-    rate(caseId)
+    caseId = '2179'
+
+    # downloadAndUnzip(caseId)
+    # calcuResults(caseId)
+    # rate(caseId)
     searchCase(caseId)
     getRecommendedLabel(caseId)
     # getRecommendedCode(caseId)

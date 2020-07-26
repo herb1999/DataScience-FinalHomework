@@ -10,9 +10,84 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sb
 from scipy.io import loadmat
+from scipy.stats import f
 import sklearn
 from scipy.cluster.vq import vq, kmeans, whiten
 from sklearn.decomposition import PCA
+
+
+def F_test(clusters):
+    print('----------方差分析------------')
+    k=len(clusters)
+    rates = []
+    mean_list = []
+    var_list = []
+    num_list = []
+    num_total = 0
+    mean_total = 0
+    for cluster in clusters:
+        rates.append(list(cluster['rate']))
+    # print(rates)
+    # 求各组均值\方差\个数
+    for rate in rates:
+        mean_list.append(np.mean(rate))
+        var_list.append(np.var(rate))
+        num_list.append(len(rate))
+
+    # 求总体均值、个数
+    num_total = sum(num_list)
+    mean_total = sum(map(lambda x: x[0] * x[1], zip(mean_list, num_list))) / num_total
+
+    # 总偏差平方和 SS
+    SS = 0
+    for rate in rates:
+        rate = np.array(rate)
+        SS += np.sum((rate - mean_total) ** 2)
+
+    # 组内偏差 SSe
+    SSe = 0
+    for idx, rate in enumerate(rates):
+        rate = np.array(rate)
+        SSe += np.sum((rate - mean_list[idx]) ** 2)
+
+    # 组间偏差 SSa
+    SSa = SS - SSe
+    # 组件偏差验证
+    SSaTest = 0
+    for idx, mean in enumerate(mean_list):
+        SSaTest += (mean - mean_total) ** 2 * num_list[idx]
+
+    # 自由度
+    df=num_total-1
+    dfa=k-1
+    dfe=num_total-k
+
+    MSa=SSa/dfa
+    MSe=SSe/dfe
+
+    F=MSa/MSe
+    p=f.sf(F,dfa,dfe)
+    print(mean_list)
+    print(var_list)
+    print(num_list)
+    print(num_total)
+    print(mean_total)
+
+    print('SS')
+    print(SS)
+    print('SSa')
+    print(SSa)
+    print('SSaTest')
+    print(SSaTest)
+    print('df')
+    print(df)
+    print('dfe')
+    print(dfe)
+    print('F: '+str(F))
+    print('p: ' + str(p))
+
+
+    print('----------方差分析完毕------------')
 
 
 def draw_after_kmeans(X, label, k):
@@ -29,23 +104,37 @@ def draw_after_kmeans(X, label, k):
     plt.show()
 
 
-def find_best_k(lossList, minK):
+def draw_label_and_rate(X, label, k):
+    fig, ax = plt.subplots(figsize=(9, 6))
+    colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k']
+    for i in range(k):
+        ax.scatter(label, X['rate'], s=30, color=colors[i], label='Cluster ' + str(i + 1))
+    ax.legend()
+    plt.show()
+
+
+def find_best_k(lossList, minK,caseId):
+    # todo: 人工判断k值(2~7)
+    manual_k={'2908':7}
+    if caseId in manual_k:
+        return manual_k[caseId]
     maxK = minK + len(lossList)
     kList = range(minK, maxK)
-    plt.plot(kList,lossList)
+    plt.plot(kList, lossList)
     plt.show()
 
     cosVals = []
     for i in range(1, len(lossList) - 1):
         v1 = [1, lossList[i] - lossList[i - 1]]
-        v2 = [1, lossList[i+1] - lossList[i]]
-        cosVals.append(cosine_similarity(v1,v2))
+        v2 = [1, lossList[i + 1] - lossList[i]]
+        cosVals.append(cosine_similarity(v1, v2))
 
-    plt.plot(kList[1:-1],cosVals)
+    plt.plot(kList[1:-1], cosVals)
     plt.show()
-    idx=int(np.argmin(cosVals))+1
+    idx = int(np.argmin(cosVals)) + 1
     print(idx)
     return kList[idx]
+
 
 """获取推荐标签
 
@@ -57,6 +146,8 @@ def find_best_k(lossList, minK):
         bestCodePaths,聚类分开的dataFrames中评分最高的code的path
 
 """
+
+
 # todo: 可能漏掉使用少但是关键的label
 # todo: 难点：证明label聚出的类和评分的相关性，这样才可以对所有代码聚类，选出评分最高的一个类；不然就只能评分选代码，再聚类
 # todo: 或者探索一下方法与评分的关联性？
@@ -99,9 +190,9 @@ def getRecommendedLabel(caseId):
         centroidsList.append(centriods)
 
     # 肘部优化法确定最佳K值
-    bestK=find_best_k(lossList, minK)
-    print("bestK:  "+str(bestK))
-    bestCentroids = centroidsList[bestK-minK]
+    bestK = find_best_k(lossList, minK , caseId)
+    print("bestK:  " + str(bestK))
+    bestCentroids = centroidsList[bestK - minK]
 
     label = vq(X_new, bestCentroids)[0]
     print(label)
@@ -120,15 +211,18 @@ def getRecommendedLabel(caseId):
     # print(clusters[int(np.argmin(rate))])
 
     draw_after_kmeans(X_new, label, bestK)
+    draw_label_and_rate(X, label, bestK)
+    F_test(clusters)
+
     labels = clusters[int(np.argmin(rate))].drop('rate', axis=1).sum().sort_values(ascending=False)
     # stat.sort_values()
     print(labels)
     # 保存推荐结果
-    with open('../cases/'+caseId+'/recommendLabel.json', 'w')as f:
+    with open('../cases/' + caseId + '/recommendLabel.json', 'w')as f:
         json.dump(dict(labels), f)
 
     # 获取各个簇中评分最高的代码路径
-    bestCodePaths=[]
+    bestCodePaths = []
     for cluster in clusters:
         print('cluster')
         print(cluster)
@@ -140,7 +234,7 @@ def getRecommendedLabel(caseId):
     with open('../cases/' + caseId + '/bestCodes.json', 'w')as f:
         json.dump(bestCodePaths, f)
     print('-------------标签推荐完成--------------------')
-    return labels,bestCodePaths
+    return labels, bestCodePaths
 
 
 # 目的：值得推荐的代码可能有十几个，也可能只有几个，要靠聚类区分出最优秀的一类代码
