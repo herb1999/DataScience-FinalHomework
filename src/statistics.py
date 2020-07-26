@@ -171,7 +171,7 @@ def_normal=['&','|','~','and','or','elif','if','else','\"']
 # 返回使用的库的方法名
 # 假设方法名都是在(前面  先以除(外分隔符分割每一行代码
 def splitLine(line):
-    op = '[=\+\-\*/\[\]\)<>:,]'
+    op = '[=\+\-\*/\[\]\)<>:,%]'
     variable = '\s*[a-zA-Z_]+?[\w_]*\s*'
     if(line.strip().startswith("#")):
         return []
@@ -208,6 +208,6 @@ if __name__ == '__main__':
     #                 print(l)
     # searchCase('2307')
     # with open('../cases/2307/24/main.py','r',encoding='UTF-8') as f:
-    with open('../cases/try.py', 'r', encoding='UTF-8') as f:
+    with open('../cases/2307/0/main.py', 'r', encoding='UTF-8') as f:
         lines=f.readlines()
         print(searchLib(lines))
