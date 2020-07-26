@@ -44,9 +44,8 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "no-unused-vars":"off",
-      "semi":"off"
-      
+      "no-unused-vars": "off",
+      "semi": "off"
     }
   },
   "browserslist": [
@@ -54,5 +53,4 @@
     "last 2 versions",
     "not dead"
   ]
-  
 }

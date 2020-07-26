@@ -25,28 +25,6 @@ def checkResult(filePath):
     data = json.loads(res)
     return data
 
-"""检测代码是不是python。
-
-    Args:
-        filePath: 目标代码的文件夹路径
-        
-    Returns:
-        true：是python
-        false：不是python
-
-"""
-def checkPython(filePath):
-    if filePath[-1]=='0':
-        return True
-    path=filePath+'/properties'
-    f = open(path, 'r')
-    res = f.read()
-    data = json.loads(res)
-    # print(data)
-    if data['lang']=='Python3':
-        return True
-    else:
-        return False
 
 """单个case测试,
 
@@ -72,6 +50,7 @@ def calcuResults(caseId):
     casePath = filePathList[1] + '/.mooctest/testCases.json'
 
     for filePath in filePathList:
+
 
         #学生代码路径
         pyPath= filePath +'/main.py'
@@ -145,15 +124,13 @@ def rate(caseId):
     results={'time':[],'lines':[],'path':[]}
     filePathList=getFilePathList(caseId)
     for file in filePathList:
-        if checkPython(file):
-            # initCase(file)
-            data = checkResult(file)
-            #排除没有全用例通过的代码
-            if 0 in data['casesResults']:
-                continue
-            results['path'].append(file)
-            results['time'].append(data['runningTimeAvg'])
-            results['lines'].append(data['codeLines'])
+        data = checkResult(file)
+        #排除没有全用例通过的代码
+        if 0 in data['casesResults']:
+            continue
+        results['path'].append(file)
+        results['time'].append(data['runningTimeAvg'])
+        results['lines'].append(data['codeLines'])
     # print(results)
     df=pd.DataFrame(results)
     # print(df)

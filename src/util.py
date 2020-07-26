@@ -7,9 +7,22 @@ import urllib.request,urllib.parse
 import string
 import zipfile
 import time
+
+import chardet
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+def read_file(path):
+    with open(path, 'rb')as f:
+        f_read = f.read()
+        # 适配编码格式，防止注释中出现中文乱码
+        f_charInfo = chardet.detect(f_read)
+        # f_charInfo的输出是这样的的一个字典
+        # {'confidence': 0.99, 'encoding': 'utf-8'}
+        print('编码')
+        print(f_charInfo)
+        f_read_decode = f_read.decode(f_charInfo['encoding'])
+        return f_read_decode
 def cosine_similarity(x, y, norm=False):
     """ 计算两个向量x和y的余弦相似度 """
     assert len(x) == len(y), "len(x) != len(y)"
@@ -39,6 +52,12 @@ def getFilePathList(caseId):
         data = json.loads(res)
         filePathList=data[caseId]
     return filePathList
+
+def getFilePathListAll():
+    with open('../data/filename.json', 'r')as f:
+        res = f.read()
+        data = json.loads(res)
+    return data
 
 def getAllCases():
     allCases = []
