@@ -83,6 +83,8 @@ def clearCode(lines):
     for line in lines:
         # 多行注释
         line = line.strip()
+        #处理掉 ;
+        line=line.replace(';','')
         if line=='':
             continue
         if (rows):

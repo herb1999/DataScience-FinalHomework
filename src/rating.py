@@ -1,17 +1,12 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
-import os
-import sys
-import json
-import urllib.request,urllib.parse
-import string
-import zipfile
-import time
-import matplotlib.pyplot as plt
+from collections import Counter
 from src.util import *
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
+from math import log2
+import re
 """读取目标代码的测试结果的json文件。
 
     Args:
@@ -189,13 +184,94 @@ def rate(caseId):
         代码容量度量值
 
 """
+#todo helstead
+def getFunc(lines):
+    list1 = []
+    for line in lines:
+        op = '[=\+\-\*/\[\]\)<>:,%]'
+        variable = '\s*[a-zA-Z_]+?[\w_]*\s*'
+        if (line.strip().startswith("#")):
+            return []
+        res = (re.split(op, line))
+        re_op1 = r'{}\.{}'.format(variable, variable)
+        re_op = r'({})'.format(variable, variable)
+        re_def = r'def({})'.format(variable)
+        for item in res:
+            cur = re.match(re_def, item)
+            if (cur != None):
+                list1.append(cur.group(1).strip())
+                continue
+            tmp = re.split('\(', item)
+            if (len(tmp) <= 1):
+                continue
+            for i in range(0, len(tmp) - 1):
+                func = tmp[i].strip()
+                if (len(func) == 0):
+                    continue
+                if len(func.split(' '))>1:
+                    func=func.split(' ')[-1]
+                if (func.startswith('.')):
+                    func = func[1:]
+                list1.append(func)
+    return list(set(list1))
 def Helstead(lines):
-    return 0
+    # lines=clearCode(lines)
+    n1,n2,N1,N2=0,0,0,0
+    ops,varibles=[],[] #记录存在的操作符、操作数
+    op = '[=\+\-\*/\[\]<>:,%!\(\)]'
+    op_list=['+','-','*','/','%','>','<','<=','>=','+=','-=','=','*=','/=','==','!=','!']
+    reserved_word=['and','as','break','class','assert','continue','def','del','elif','else'
+                  'except','finally','for','from','False','global','if','import','in','is'
+                   'lambda','nonlocal','not','None','or','pass','raise','return','try','True'
+                   'while','with','yield']
+    def_list=getFunc(lines)
+    for line in lines:
+        for _op in op_list: #检查运算符 如果是+= 会多算+ =一次 后续减掉
+            if _op in line :
+                ops.append(_op)
+                N1+=1
+        tmp = re.split(op, line)
+        tmp=list(filter(lambda x:x.strip()!='',tmp))
+        for item in tmp:
+            res=re.split('\s+',item)
+            for word in res:
+                word=word.strip()
+                if word=='' :
+                    continue
+                if word in reserved_word or word in def_list:
+                    N1+=1
+                    ops.append(word)
+                elif '.' in word:
+                    N1+=1
+                    if word.startswith('.'):
+                        word=word.replace('.','',1)
+                    ops.append(word)
+                else:
+                    N2+=1
+                    varibles.append(word)
+    special = ['+', '-', '*', '/','=','!']
+    special_ = ['+=', '-=', '*=', '/=','==','!=']
+    op_count = Counter(ops)
+    n1 = len(op_count)
+    # print(op_count)
+    for i, item in enumerate(special):
+        if op_count[special_[i]]!=0 and op_count[item] <= op_count[special_[i]] :
+            n1 -= 1
+        N1-=op_count[special_[i]]*2
+    n2 = len(dict(Counter(varibles)))
+    print(list(set(ops)),list(set(varibles)))
+    n=n1+n2
+    N=N1+N2
+    print(N,n)
+    return N*log2(n)
 
 if __name__ == '__main__':
+    with open('../cases/2307/0/main.py', 'r', encoding='UTF-8') as f:
+        lines = f.readlines()
+        lines=clearCode(lines)
+        print(Helstead(lines))
 
-    rate('2307')
-
+    # rate('2307')
 
 
 
