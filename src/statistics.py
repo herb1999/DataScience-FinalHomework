@@ -49,10 +49,12 @@ def searchCase(caseId):
     results_method = results_method.drop('path', axis=1)
     results_method.insert(0, 'path', paths)
     results_method.set_index('path')
+    results_method = results_method.fillna(0)
     print('results_lib: ')
     print(results_lib)
     print('results_method: ')
-    print(results_method)
+    print(list(results_method))
+    print(results_method.fillna(0))
 
     results_method.to_csv('../cases/' + caseId + '/statistics.csv')
     print('-------------CASE 统计完成--------------------')
@@ -161,6 +163,8 @@ def searchMethod(lines, libs):
         methods = list(libsAndMethods[lib])
         for method in methods:
             if method in patterns:
+                if len(method.split('.')) > 1:
+                    method = method.split('.')[-1]
                 res[(lib + '.' + method)] = sigmoid(patterns.count(method))
 
     return res
@@ -220,8 +224,8 @@ if __name__ == '__main__':
     #             l=splitLine(line)
     #             if(l!=[]):
     #                 print(l)
-    # searchCase('2307')
+    searchCase('2307')
     # with open('../cases/2307/24/main.py','r',encoding='UTF-8') as f:
-    with open('../cases/try.py', 'r', encoding='UTF-8') as f:
-        lines = f.readlines()
-        print(searchLib(lines))
+    # with open('../cases/try.py', 'r', encoding='UTF-8') as f:
+    #     lines = f.readlines()
+    #     print(searchLib(lines))

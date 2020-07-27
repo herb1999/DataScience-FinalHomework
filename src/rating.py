@@ -1,6 +1,7 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
 from memory_profiler import profile
+from guppy import hpy
 from collections import Counter
 from src.util import *
 import pandas as pd
@@ -76,8 +77,8 @@ def calcuResults(caseId):
         testRes['runningTimeAvg']=np.mean(runningTime)
 
         # 测试代码内存占用
-        for idx in range(caseNum):
-            memory_tracker(filePath,idx)
+        # for idx in range(caseNum):
+        #     memory_tracker(filePath,idx)
 
         #统计测试用例结果
         for idx in range(caseNum):
@@ -285,8 +286,16 @@ def memory_tracker(filePath,idx):
                     with open('../data/test.txt','a+') as f:
                         f.write(m)
     os.system('mprof clean')
-
-
+# def memory_tracker(filePath,idx):
+#     pyPath = filePath + '/main.py'
+#     inputPath = filePath + '/input' + str(idx) + '.txt'
+#     outputPath = filePath + '/memory' + str(idx) + '.txt'
+#     mem =hpy()
+#     cmd = 'python ' + '' + pyPath + ' <' + inputPath
+#     os.system(cmd)
+#     print(mem.heap())
+#     pass
+#
 
 # todo 检查循环深度
 def getDepth(lines):
@@ -331,13 +340,16 @@ def roundDepth(lines):
         return 0
     depths.sort()
     return depths[-1]
+
 if __name__ == '__main__':
-    with open('../cases/2307/4/main.py', 'r', encoding='UTF-8') as f:
-        lines = f.readlines()
-        lines=clearCode(lines)
-        print(getDepth(lines))
-    # rate('2307')
-    calcuResults('2176')
+    # with open('../cases/2307/4/main.py', 'r', encoding='UTF-8') as f:
+    #     lines = f.readlines()
+    #     lines=clearCode(lines)
+    #     print(getDepth(lines))
+    # # rate('2307')
+    # calcuResults('2176')
+    # hpy().heap()
+    memory_tracker('../cases/2176/2/main.py',0)
 
 
 
