@@ -171,7 +171,6 @@ def rate(caseId):
         代码容量度量值
 
 """
-#todo helstead
 def getFunc(lines):
     list1 = []
     for line in lines:
@@ -251,13 +250,54 @@ def Helstead(lines):
     N=N1+N2
     # print(N,n)
     return N*log2(n)
-
+# todo 检查循环深度
+def getDepth(lines):
+    depths=[]
+    tmplines=[]
+    mainlines=[]
+    isDef=False
+    defBegin=0
+    for line in lines:
+        if line.startswith("def"):
+            isDef=True
+            defBegin=line.index('d')
+            continue
+        if isDef:
+            if line.index(line.strip()[0])==defBegin:
+                isDef=False
+                depth=roundDepth(tmplines)
+                depths.append(depth)
+                tmplines=[]
+            else:
+                tmplines.append(line)
+        else:
+            mainlines.append(line)
+    if mainlines!=[]:
+        depths.append(roundDepth(mainlines))
+    depths.sort()
+    return depths[-1]
+def roundDepth(lines):
+    dic={}
+    for line in lines:
+        times = line.count('for') + line.count('while')  # 该行for\while出现次数
+        if times==0:
+            continue
+        idx=line.index(line.strip()[0])
+        if (idx not in dic.keys() or dic[idx]<times):
+            dic[idx]=times
+    l=dic.keys()
+    depths=[]
+    for i,item in enumerate(l):
+        depths.append(i+dic[item])
+    if depths==[]:
+        return 0
+    depths.sort()
+    return depths[-1]
 if __name__ == '__main__':
-    with open('../cases/2307/0/main.py', 'r', encoding='UTF-8') as f:
+    with open('../cases/2307/4/main.py', 'r', encoding='UTF-8') as f:
         lines = f.readlines()
         lines=clearCode(lines)
-        print(Helstead(lines))
-
+        print(getDepth(lines))
     # rate('2307')
 
 
