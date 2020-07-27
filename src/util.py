@@ -86,7 +86,6 @@ def getRecommendCodePaths(caseId):
         res = f.read()
         data = json.loads(res)
     return data
-#todo 过滤空行、注释，包括单行、多行注释、跟着代码的行后注释  zjy
 """过滤空行、注释，包括单行、多行注释、跟着代码的行后注释
 
 Args:
@@ -100,11 +99,9 @@ def clearCode(lines):
     rows = False
     res = []
     for line in lines:
-        # 多行注释
-        line = line.strip()
         #处理掉 ;
         line=line.replace(';','')
-        if line=='':
+        if line.strip()=='':
             continue
         if (rows):
             if (line.find("'''") != -1):
@@ -119,6 +116,8 @@ def clearCode(lines):
                 if idx == 0:
                     continue
                 line = line[0:idx]
+            if line.strip() == '':
+                continue
             res.append(line)
     return res
 
