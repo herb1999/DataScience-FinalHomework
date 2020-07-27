@@ -15,9 +15,9 @@ if __name__ == '__main__':
     caseId = '2176'
 
     # downloadAndUnzip(caseId)
-    calcuResults(caseId)
-    # rate(caseId)
-    # searchCase(caseId)
-    # getRecommendedLabel(caseId)
+    # calcuResults(caseId)
+    rate(caseId)
+    searchCase(caseId)
+    getRecommendedLabel(caseId)
     # getRecommendedCode(caseId)
 

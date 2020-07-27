@@ -1,5 +1,6 @@
 #!/usr/bin/env python 
 # -*- coding:utf-8 -*-
+from memory_profiler import profile
 from collections import Counter
 from src.util import *
 import pandas as pd
@@ -74,6 +75,10 @@ def calcuResults(caseId):
         testRes['runningTime']=runningTime
         testRes['runningTimeAvg']=np.mean(runningTime)
 
+        # 测试代码内存占用
+        for idx in range(caseNum):
+            memory_tracker(filePath,idx)
+
         #统计测试用例结果
         for idx in range(caseNum):
             outputPath = filePath + '/output' + str(idx) + '.txt'
@@ -94,13 +99,14 @@ def calcuResults(caseId):
             lines=clearCode(lines)
             for line in lines:
                 for output in outputs:
+                    if output in ['F','T','True','False','true','false']:
+                        continue
                     testStr1='print(\''+output[:-1]+'\')'
                     testStr2 = 'print(\"' + output[:-1] + '\")'
                     if testStr1 in line or testStr2 in line:
                         testRes['casesResults'] = [0] * caseNum
                         print('----------------------------------------cheater: ' + filePath)
-
-
+                        break
 
         #统计代码容量
         with open(pyPath,'r',encoding='UTF-8') as f:
@@ -252,13 +258,44 @@ def Helstead(lines):
     # print(N,n)
     return N*log2(n)
 
-if __name__ == '__main__':
-    with open('../cases/2307/0/main.py', 'r', encoding='UTF-8') as f:
-        lines = f.readlines()
-        lines=clearCode(lines)
-        print(Helstead(lines))
+"""用于追踪代码内存占用
 
+args:
+    filePath:代码目录
+    idx:第几个用例
+"""
+# @profile(precision=4, stream=open('../temp/memory_profiler.log','w+',encoding='gbk'))
+# def memory_tracker(filePath,idx):
+#     pyPath = filePath + '/main.py'
+#     inputPath = filePath + '/input' + str(idx) + '.txt'
+#     outputPath = filePath + '/memory' + str(idx) + '.txt'
+#     cmd = 'python ' + '-m memory_profiler ' + pyPath + ' <' + inputPath
+#     os.system(cmd)
+#     pass
+def memory_tracker(filePath,idx):
+    pyPath = filePath + '/main.py'
+    inputPath = filePath + '/input' + str(idx) + '.txt'
+    outputPath = filePath + '/memory' + str(idx) + '.txt'
+    cmd = 'mprof run ' + pyPath + ' --python '+'< ' + inputPath
+    os.system(cmd)
+    for root, dirs, files in os.walk('./'):
+        for file in files:
+            if os.path.splitext(file)[1] == '.dat':
+                with open(file,'r') as f:
+                    m=f.readlines()[-1]
+                    with open('../data/test.txt','a+') as f:
+                        f.write(m)
+    os.system('mprof clean')
+
+
+if __name__ == '__main__':
+    # with open('../cases/2307/0/main.py', 'r', encoding='UTF-8') as f:
+    #     lines = f.readlines()
+    #     lines=clearCode(lines)
+    #     print(Helstead(lines))
+    # memory_tracker('../cases/2179/2',0)
     # rate('2307')
+    calcuResults('2176')
 
 
 

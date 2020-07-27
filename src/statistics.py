@@ -35,7 +35,7 @@ def searchCase(caseId):
     for path in paths:
         with open(path + '/main.py', 'r', encoding='UTF-8') as f:
             lines = clearCode(f.readlines())
-            libs,asMethodMap = searchLib(lines)  # 获取库
+            libs, asMethodMap = searchLib(lines)  # 获取库
             results_lib.extend(libs)
             res = searchMethod(lines, libs)  # 获取方法
             # if len(res)>0:
@@ -100,7 +100,7 @@ def searchCode(path):
 # todo:找个地方全局sigmoid一下
 # todo: as 的检测
 def searchLib(lines):
-    res = ['std']
+    res = ['std', 'list', 'dict', 'str', 'set']
     asLibMap = {}  # 新名：原名
     asMethodMap = {}  # 新名：原名
     libs = getLibs()
