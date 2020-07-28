@@ -11,14 +11,17 @@ from src.util import *
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sb
-from scipy.io import loadmat
 from scipy.stats import f
-import sklearn
 from scipy.cluster.vq import vq, kmeans, whiten
 from sklearn.decomposition import PCA
 import prettytable as pt
 
+"""对簇和评分的关系进行方差分析
+
+    args:
+        clusters: 聚类得到的DataFrame数组
+        
+"""
 def F_test(clusters):
     print('----------方差分析------------')
     k=len(clusters)
@@ -76,28 +79,21 @@ def F_test(clusters):
     print(num_total)
     print(mean_total)
 
-    # print('SS')
-    # print(SS)
-    # print('SSa')
-    # print(SSa)
-    # print('SSaTest')
-    # print(SSaTest)
-    # print('df')
-    # print(df)
-    # print('dfe')
-    # print(dfe)
-    # print('F: '+str(F))
-    # print('p: ' + str(p))
     table = pt.PrettyTable(['项目','平方和 ','自由度 ','均方和 ','F比值 ','p值 '])
     table.add_row(['簇的差异',format(SSa, '.4f'),dfa,format(MSa, '.4f'),format(F, '.4f'),format(p, '.4f')])
     table.add_row(['误差', format(SSe, '.4f'), dfe, format(MSe, '.4f'), '-', '-'])
     table.add_row(['总和', format(SS, '.4f'), df, '-', '-', '-'])
     print(table)
-
-
     print('----------方差分析完毕------------')
 
+"""绘制聚类结果.
 
+    Args:
+        X: 代码的方法/函数统计数据
+        label：聚类得到的分类标签
+        k：簇的个数
+
+"""
 def draw_after_kmeans(X, label, k):
     idx = []  # 分类结果，为X中的行下标
     clusters = []  # 使用下标分开的dataFrames
@@ -109,10 +105,16 @@ def draw_after_kmeans(X, label, k):
     for i in range(k):
         ax.scatter(clusters[i][:, 0], clusters[i][:, 1], s=30, color=colors[i], label='Cluster ' + str(i + 1))
     ax.legend()
-
     plt.show()
 
+"""绘制簇和对应代码评分.
 
+    Args:
+        X: 代码的方法/函数统计数据
+        label：聚类得到的分类标签
+        k：簇的个数
+
+"""
 def draw_label_and_rate(X, label, k):
     fig, ax = plt.subplots(figsize=(9, 6))
     for i in range(k):
@@ -123,9 +125,18 @@ def draw_label_and_rate(X, label, k):
     plt.ylabel('rate')
     plt.show()
 
+"""肘部法则优化k值.
 
+    Args:
+        X: 代码的方法/函数统计数据
+        label：聚类得到的分类标签
+        k：簇的个数
+        
+    Returns：
+        最佳k值
+
+"""
 def find_best_k(lossList, minK,caseId):
-    # todo: 人工判断k值(2~7)
     manual_k={'2908':7}
     if caseId in manual_k:
         return manual_k[caseId]
@@ -167,8 +178,7 @@ def find_best_k(lossList, minK,caseId):
 """
 
 
-# todo: 可能漏掉使用少但是关键的label
-# todo: 难点：证明label聚出的类和评分的相关性，这样才可以对所有代码聚类，选出评分最高的一个类；不然就只能评分选代码，再聚类
+
 # todo: 或者探索一下方法与评分的关联性？
 def getRecommendedLabel(caseId):
     print('-------------标签推荐开始--------------------')
@@ -184,7 +194,7 @@ def getRecommendedLabel(caseId):
 
     stat = getStatistics(caseId).set_index('path').fillna(0)
     rated = getRated(caseId)
-    rated = pd.DataFrame(rated, columns=['path', 'rate'])  # todo:是把评分用到的度量特征和方法使用放在一起聚类，还是只用方法？
+    rated = pd.DataFrame(rated, columns=['path', 'rate'])
     print(rated)
     X = pd \
         .merge(stat, rated, on='path', how='outer') \
@@ -239,7 +249,7 @@ def getRecommendedLabel(caseId):
 
     draw_after_kmeans(X_new, label, bestK)
     draw_label_and_rate(X, label, bestK)
-    F_test(clusters)
+    # F_test(clusters)
 
     labels = clusters[int(np.argmin(rate))].drop('rate', axis=1).sum().sort_values(ascending=False)
     # stat.sort_values()
@@ -264,56 +274,54 @@ def getRecommendedLabel(caseId):
     return labels, bestCodePaths
 
 
-# 目的：值得推荐的代码可能有十几个，也可能只有几个，要靠聚类区分出最优秀的一类代码
-
-
-def init_centroids(X, k):
-    m, n = X.shape
-    centroids = np.zeros((k, n))
-    idx = np.random.randint(0, m, k)
-
-    for i in range(k):
-        centroids[i, :] = X[idx[i], :]
-
-    return centroids
-
-
-def find_closest_centroids(X, centroids):
-    m = X.shape[0]
-    k = centroids.shape[0]
-    idx = np.zeros(m)
-
-    for i in range(m):
-        min_dist = 1000000
-        for j in range(k):
-            dist = np.sum((X[i, :] - centroids[j, :]) ** 2)
-            if dist < min_dist:
-                min_dist = dist
-                idx[i] = j
-
-    return idx
-
-
-def compute_centroids(X, idx, k):
-    m, n = X.shape
-    centroids = np.zeros((k, n))
-
-    for i in range(k):
-        indices = np.where(idx == i)  # 找出idx中值为i的数的下标
-        centroids[i, :] = (np.sum(X[indices, :], axis=1) / len(indices[0])).ravel()
-    return centroids
-
-
-def k_means(X, k, max_iters):
-    m, n = X.shape
-    X = X.values  # X转ndarray，不然报错
-    idx = np.zeros(m)
-    centroids = init_centroids(X, k)
-
-    for i in range(max_iters):
-        idx = find_closest_centroids(X, centroids)
-        centroids = compute_centroids(X, idx, k)
-    return idx, centroids
+#
+# def init_centroids(X, k):
+#     m, n = X.shape
+#     centroids = np.zeros((k, n))
+#     idx = np.random.randint(0, m, k)
+#
+#     for i in range(k):
+#         centroids[i, :] = X[idx[i], :]
+#
+#     return centroids
+#
+#
+# def find_closest_centroids(X, centroids):
+#     m = X.shape[0]
+#     k = centroids.shape[0]
+#     idx = np.zeros(m)
+#
+#     for i in range(m):
+#         min_dist = 1000000
+#         for j in range(k):
+#             dist = np.sum((X[i, :] - centroids[j, :]) ** 2)
+#             if dist < min_dist:
+#                 min_dist = dist
+#                 idx[i] = j
+#
+#     return idx
+#
+#
+# def compute_centroids(X, idx, k):
+#     m, n = X.shape
+#     centroids = np.zeros((k, n))
+#
+#     for i in range(k):
+#         indices = np.where(idx == i)  # 找出idx中值为i的数的下标
+#         centroids[i, :] = (np.sum(X[indices, :], axis=1) / len(indices[0])).ravel()
+#     return centroids
+#
+#
+# def k_means(X, k, max_iters):
+#     m, n = X.shape
+#     X = X.values  # X转ndarray，不然报错
+#     idx = np.zeros(m)
+#     centroids = init_centroids(X, k)
+#
+#     for i in range(max_iters):
+#         idx = find_closest_centroids(X, centroids)
+#         centroids = compute_centroids(X, idx, k)
+#     return idx, centroids
 
 
 """

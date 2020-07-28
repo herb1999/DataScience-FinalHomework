@@ -96,6 +96,7 @@ export default new Vuex.Store({
 
 
       console.log('代码提交成功' + res)
+      return res
 
     },
 

@@ -20,7 +20,6 @@ import numpy as np
         推荐代码的path列表，包括标准答案，以及聚类后的各个簇中评分最高的，按照相似度排序
 
 """
-# todo:pearson：Pearson\kendall\spearman相关系数? 有没有比余弦距离更好的度量两个向量的相关性的方法？
 def getRecommendedCode(caseId):
     print('-------------代码推荐开始--------------------')
     allPaths=[]

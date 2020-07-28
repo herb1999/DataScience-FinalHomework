@@ -294,12 +294,7 @@ def Helstead(lines):
     # print(N,n)
     return N*log2(n)
 
-"""用于追踪代码内存占用
 
-args:
-    filePath:代码目录
-    idx:第几个用例
-"""
 # @profile(precision=4, stream=open('../temp/memory_profiler.log','w+',encoding='gbk'))
 # def memory_tracker(filePath,idx):
 #     pyPath = filePath + '/main.py'
@@ -308,6 +303,12 @@ args:
 #     cmd = 'python ' + '-m memory_profiler ' + pyPath + ' <' + inputPath
 #     os.system(cmd)
 #     pass
+"""用于追踪代码内存占用
+
+args:
+    filePath:代码目录
+    idx:第几个用例
+"""
 def memory_tracker(filePath,idx):
     pyPath = filePath + '/main.py'
     inputPath = filePath + '/input' + str(idx) + '.txt'
@@ -322,18 +323,7 @@ def memory_tracker(filePath,idx):
                     with open('../data/test.txt','a+') as f:
                         f.write(m)
     os.system('mprof clean')
-# def memory_tracker(filePath,idx):
-#     pyPath = filePath + '/main.py'
-#     inputPath = filePath + '/input' + str(idx) + '.txt'
-#     outputPath = filePath + '/memory' + str(idx) + '.txt'
-#     mem =hpy()
-#     cmd = 'python ' + '' + pyPath + ' <' + inputPath
-#     os.system(cmd)
-#     print(mem.heap())
-#     pass
-#
 
-# todo 检查循环深度
 def getDepth(lines):
     depths=[]
     tmplines=[]

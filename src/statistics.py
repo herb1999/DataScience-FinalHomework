@@ -8,7 +8,7 @@ from src.util import *
 import pandas as pd
 import numpy as np
 
-# todo:内置类的方法统计
+
 """统计case中所有代码的库、方法、语法糖。
 
     Args:
@@ -60,7 +60,7 @@ def searchCase(caseId):
     print('-------------CASE 统计完成--------------------')
 
 
-"""统计单个代码中的库、方法、语法糖。
+"""统计单个代码中的函数、方法。
 
     Args:
         path: 代码路径
@@ -99,8 +99,7 @@ def searchCode(path):
 """
 
 
-# todo:找个地方全局sigmoid一下
-# todo: as 的检测
+
 def searchLib(lines):
     res = ['std', 'list', 'dict', 'str', 'set']
     asLibMap = {}  # 新名：原名
@@ -142,10 +141,7 @@ def searchLib(lines):
         res: dict,方法名为key，value=sigmoid(方法使用次数)
 
 """
-
-
 def searchMethod(lines, libs):
-    # todo:排除用内置方法名定义的变量和方法
     res = {}
     libsAndMethods = getLibsAndMethods()
     patterns = []
