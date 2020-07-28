@@ -4,6 +4,9 @@ import os
 import sys
 import json
 import re
+
+from matplotlib.ticker import MultipleLocator
+
 from src.util import *
 import pandas as pd
 import numpy as np
@@ -101,15 +104,18 @@ def draw_after_kmeans(X, label, k):
     for i in range(k):
         ax.scatter(clusters[i][:, 0], clusters[i][:, 1], s=30, color=colors[i], label='Cluster ' + str(i + 1))
     ax.legend()
+
     plt.show()
 
 
 def draw_label_and_rate(X, label, k):
     fig, ax = plt.subplots(figsize=(9, 6))
-    colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k']
     for i in range(k):
-        ax.scatter(label, X['rate'], s=30, color=colors[i], label='Cluster ' + str(i + 1))
-    ax.legend()
+        ax.scatter(label, X['rate'], s=30, color='c', label='Cluster ' + str(i + 1))
+    x_major_locator = MultipleLocator(1)
+    ax.xaxis.set_major_locator(x_major_locator)  # x轴按1刻度显示
+    plt.xlabel('Cluster')
+    plt.ylabel('rate')
     plt.show()
 
 
@@ -120,7 +126,10 @@ def find_best_k(lossList, minK,caseId):
         return manual_k[caseId]
     maxK = minK + len(lossList)
     kList = range(minK, maxK)
-    plt.plot(kList, lossList)
+    plt.xlabel('k')
+    plt.ylabel('SSE')
+
+    plt.plot(kList, lossList,'-o')
     plt.show()
 
     cosVals = []
@@ -129,7 +138,12 @@ def find_best_k(lossList, minK,caseId):
         v2 = [1, lossList[i + 1] - lossList[i]]
         cosVals.append(cosine_similarity(v1, v2))
 
-    plt.plot(kList[1:-1], cosVals)
+    plt.xlabel('k')
+    plt.ylabel('cos')
+    x_major_locator = MultipleLocator(1)
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(x_major_locator)  # x轴按1刻度显示
+    plt.plot(kList[1:-1], cosVals,'-o')
     plt.show()
     idx = int(np.argmin(cosVals)) + 1
     print(idx)
@@ -163,7 +177,7 @@ def getRecommendedLabel(caseId):
     minK = 2
     maxK = 7
 
-    stat = getStatistics(caseId)
+    stat = getStatistics(caseId).set_index('path').fillna(0)
     rated = getRated(caseId)
     rated = pd.DataFrame(rated, columns=['path', 'rate'])  # todo:是把评分用到的度量特征和方法使用放在一起聚类，还是只用方法？
     print(rated)
@@ -174,18 +188,26 @@ def getRecommendedLabel(caseId):
     print(X)
     # 降维部分
     pca = PCA(n_components=2)
-    pca.fit(X)
-    X_new = pca.transform(X)
+    pca.fit(stat)
+    print(pca.explained_variance_ratio_)
+    X_new = pca.transform(stat)
     print(X_new)
     plt.scatter(X_new[:, 0], X_new[:, 1], marker='o')
     plt.show()
+
+    # pca = PCA(n_components='mle')
+    # pca.fit(X)
+    # print(pca.explained_variance_ratio_)
+    # X_new = pca.transform(X)
+    # print(X_new)
+
 
     # 聚类部分
     centroidsList = []
     lossList = []
     for k in range(minK, maxK + 1):
         # https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.vq.kmeans.html#scipy.cluster.vq.kmeans
-        centriods, loss = kmeans(X_new, k_or_guess=k)
+        centriods, loss = kmeans(X_new, k_or_guess=k,iter=300)
         lossList.append(loss)
         centroidsList.append(centriods)
 
@@ -224,8 +246,8 @@ def getRecommendedLabel(caseId):
     # 获取各个簇中评分最高的代码路径
     bestCodePaths = []
     for cluster in clusters:
-        print('cluster')
-        print(cluster)
+        # print('cluster')
+        # print(cluster)
         # dataFrame以path为idx，argmax直接得到path
         bestCodePaths.append(np.argmin(cluster['rate']))
     print('bestCodePaths: ')
@@ -293,8 +315,7 @@ def k_means(X, k, max_iters):
 测试代码
 """
 if __name__ == '__main__':
-    getRecommendedLabel('2307')
-    print(dir())
+    getRecommendedLabel('2908')
 # stat = getStatistics('2307')
 # rated = getRated('2307')
 # X =pd\

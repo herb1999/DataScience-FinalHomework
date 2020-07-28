@@ -224,7 +224,7 @@ if __name__ == '__main__':
     #             l=splitLine(line)
     #             if(l!=[]):
     #                 print(l)
-    searchCase('2307')
+    searchCase('2179')
     # with open('../cases/2307/24/main.py','r',encoding='UTF-8') as f:
     # with open('../cases/try.py', 'r', encoding='UTF-8') as f:
     #     lines = f.readlines()
