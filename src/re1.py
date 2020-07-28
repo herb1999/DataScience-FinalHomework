@@ -30,7 +30,7 @@ re_sort=re.compile(r'{}|{}\.sort\(key=lambda.+\)'.format(variable,a_list))
 
 re_filter=re.compile(r'{}=filter\(.+\)'.format(variable))
 #匹配不全 待解决
-print(re.match(re_filter,'s=filter(lambda x:not str(x).islower(),"adsssssddddd")'))
+# print(re.match(re_filter,'s=filter(lambda x:not str(x).islower(),"adsssssddddd")'))
 
 #8.map：用于把函数作用于可遍历对象的每一个元素。类似于数学中映射的概念
 re_map=re.compile(r'{}=map\(.+\)'.format(variable))
