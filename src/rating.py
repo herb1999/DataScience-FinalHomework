@@ -109,12 +109,15 @@ def calcuResults(caseId):
                         print('----------------------------------------cheater: ' + filePath)
                         break
 
-        #统计代码容量
+        #统计代码容量、循环深度
         with open(pyPath,'r',encoding='UTF-8') as f:
             lines=f.readlines()
             lines=clearCode(lines)
             volnum=Helstead(lines)
+            # depth=getDepth(lines)
         testRes['volnum']=volnum
+        # testRes['depth'] = depth
+
 
         resPath = filePath + '/result.json'
         with open(resPath, 'w')as f:
@@ -143,6 +146,7 @@ def rate(caseId):
         results['path'].append(file)
         results['time'].append(data['runningTimeAvg'])
         results['volnums'].append(data['volnum'])
+        # results['loopDepth'].append(data['depth'])
     # print(results)
     df=pd.DataFrame(results)
     # print(df)
@@ -150,9 +154,11 @@ def rate(caseId):
     scaler = MinMaxScaler()
     df['time-std'] = scaler.fit_transform(df['time'].values.reshape(-1, 1))
     df['volnums-std'] = scaler.fit_transform(df['volnums'].values.reshape(-1, 1))
+    # df['loopDepth-std'] = scaler.fit_transform(df['loopDepth'].values.reshape(-1, 1))
     # print(df)
     # 评分
     df['rate'] = df[['time-std', 'volnums-std']].mean(axis=1)
+    df=df.sort_values(by='rate')
     print(df)
     # 结果存入data/rated.csv
     print('rate')
@@ -165,6 +171,7 @@ def rate(caseId):
     plt.rcParams['font.sans-serif'] = ['SimHei']
     plt.title(caseId+'题评分排序')
     plt.ylabel('评分')
+    plt.xlabel('代码标号')
     plt.show()
     df.to_csv('../cases/'+caseId+'/rated.csv')
     print('-------------代码评分完成--------------------')
@@ -346,10 +353,11 @@ if __name__ == '__main__':
     #     lines = f.readlines()
     #     lines=clearCode(lines)
     #     print(getDepth(lines))
-    # # rate('2307')
-    # calcuResults('2176')
+
+    # calcuResults('2307')
+    rate('2908')
     # hpy().heap()
-    memory_tracker('../cases/2176/2/main.py',0)
+    # memory_tracker('../cases/2176/2/main.py',0)
 
 
 

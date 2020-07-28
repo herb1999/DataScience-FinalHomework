@@ -158,13 +158,11 @@ def searchMethod(lines, libs):
 
     print('patterns found:')
     print(patterns)
-
+    patterns=list(map(lambda s:s.split('.')[-1],patterns))
     for lib in libs:
         methods = list(libsAndMethods[lib])
         for method in methods:
             if method in patterns:
-                if len(method.split('.')) > 1:
-                    method = method.split('.')[-1]
                 res[(lib + '.' + method)] = sigmoid(patterns.count(method))
 
     return res
