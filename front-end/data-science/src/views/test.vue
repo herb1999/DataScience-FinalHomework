@@ -6,7 +6,9 @@
       </div>
       <div class="description">
         <div class="label-div">
-          <div class="label" v-for="label in recommendLabels" :key="label[0]">{{label[0]}}:{{label[1].toFixed(2)}}</div>
+          <div :class="{label:label[1]<1,lable_1:1<=label[1]<2,label_2:label[1]>=2}" v-for="label in recommendLabels" :key="label[0]" >
+            {{label[0]}}:{{label[1].toFixed(2)}}
+          </div>
         </div>
         <mavon-editor
           class="md"
@@ -43,7 +45,7 @@ export default {
     return {
       code: "",
       modalVisible:false,
-      canGetCode:false
+      canGetCode:false,
     };
   },
   name: "test",
@@ -122,7 +124,21 @@ recommendCode
         display: flex;
         flex-wrap: wrap;
         .label{
-          background: rgb(169, 221, 228);
+          background: rgb(169,211,228);
+          margin-left: 20px;
+          margin-bottom: 20px;
+          border-radius: 20px;
+          padding: 6px 10px;
+        }
+        .label_1{
+          background: rgb(171, 150, 178);
+          margin-left: 20px;
+          margin-bottom: 20px;
+          border-radius: 20px;
+          padding: 6px 10px;
+        }
+        .label_2{
+          background: rgb(223, 52, 43);
           margin-left: 20px;
           margin-bottom: 20px;
           border-radius: 20px;
@@ -134,7 +150,11 @@ recommendCode
         padding: 10px 20px;
         background-color: #f1f1f1ba;
       }
+
     }
+  }
+  .red{
+    background: rgb(223, 52, 43);
   }
   .code {
     width: 50%;
