@@ -127,7 +127,7 @@ def find_best_k(lossList, minK,caseId):
     maxK = minK + len(lossList)
     kList = range(minK, maxK)
     plt.xlabel('k')
-    plt.ylabel('SSE')
+    plt.ylabel('Cost')
 
     plt.plot(kList, lossList,'-o')
     plt.show()
