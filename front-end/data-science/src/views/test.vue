@@ -7,7 +7,7 @@
       <div class="description">
         <div class="label-div">
           <div :class="{label:label[1]===0,label_1:0<label[1]&&label[1]<1,label_2:label[1]>=1}" v-for="label in recommendLabels" :key="label[0]" >
-            {{label[0]}}:{{label[1].toFixed(2)}}
+            {{label[0]}}
           </div>
         </div>
         <mavon-editor
@@ -129,14 +129,14 @@ recommendCode
           padding: 6px 10px;
         }
         .label_1{
-          background: rgb(171, 150, 178);
+          background: rgb(92, 160, 228);
           margin-left: 20px;
           margin-bottom: 20px;
           border-radius: 20px;
           padding: 6px 10px;
         }
         .label_2{
-          background: rgb(223, 52, 43);
+          background: rgb(95, 119, 228);
           margin-left: 20px;
           margin-bottom: 20px;
           border-radius: 20px;
