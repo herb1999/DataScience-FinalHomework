@@ -17,7 +17,7 @@ from scipy.stats import f
 import sklearn
 from scipy.cluster.vq import vq, kmeans, whiten
 from sklearn.decomposition import PCA
-
+import prettytable as pt
 
 def F_test(clusters):
     print('----------方差分析------------')
@@ -76,18 +76,23 @@ def F_test(clusters):
     print(num_total)
     print(mean_total)
 
-    print('SS')
-    print(SS)
-    print('SSa')
-    print(SSa)
-    print('SSaTest')
-    print(SSaTest)
-    print('df')
-    print(df)
-    print('dfe')
-    print(dfe)
-    print('F: '+str(F))
-    print('p: ' + str(p))
+    # print('SS')
+    # print(SS)
+    # print('SSa')
+    # print(SSa)
+    # print('SSaTest')
+    # print(SSaTest)
+    # print('df')
+    # print(df)
+    # print('dfe')
+    # print(dfe)
+    # print('F: '+str(F))
+    # print('p: ' + str(p))
+    table = pt.PrettyTable(['项目','平方和 ','自由度 ','均方和 ','F比值 ','p值 '])
+    table.add_row(['簇的差异',format(SSa, '.4f'),dfa,format(MSa, '.4f'),format(F, '.4f'),format(p, '.4f')])
+    table.add_row(['误差', format(SSe, '.4f'), dfe, format(MSe, '.4f'), '-', '-'])
+    table.add_row(['总和', format(SS, '.4f'), df, '-', '-', '-'])
+    print(table)
 
 
     print('----------方差分析完毕------------')
