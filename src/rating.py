@@ -21,20 +21,13 @@ def checkResult(filePath):
     res = f.read()
     data = json.loads(res)
     return data
+"""测试新提交的代码
 
-
-"""单个case测试,
-
-    Args:
-        caseId: 题目ID
-
+   Args:
+       caseId: 新提交的代码对应的题目号
+       code:新提交的代码
     Returns:
-        只跑一次，结果存到.mooctest/result.json
-        runningTime: 各测试用例运行时间
-        runningTimeAvg：测试平均时间
-        codeLines：代码行数
-        casesResults：测试结果，一个包含0、1的数组，长度为用例数量，用例通过记为1，否则为0
-        
+       通过的测试用例转化的得分
 """
 def checkTestCode(caseId,code):
     bingo=0
@@ -63,6 +56,20 @@ def checkTestCode(caseId,code):
             bingo+=1
     print(bingo*100/caseNum)
     return bingo*100/caseNum
+
+"""单个case测试,
+
+    Args:
+        caseId: 题目ID
+
+    Returns:
+        只跑一次，结果存到.mooctest/result.json
+        runningTime: 各测试用例运行时间
+        runningTimeAvg：测试平均时间
+        codeLines：代码行数
+        casesResults：测试结果，一个包含0、1的数组，长度为用例数量，用例通过记为1，否则为0
+        
+"""
 
 def calcuResults(caseId):
     #废案
@@ -205,13 +212,13 @@ def rate(caseId):
     df.to_csv('../cases/'+caseId+'/rated.csv')
     print('-------------代码评分完成--------------------')
 
-"""代码容量度量。
+"""代码中使用的函数名
 
     Args:
         lines: 代码
 
     Returns:
-        代码容量度量值
+        使用/定义的函数名的列表
 
 """
 def getFunc(lines):
@@ -243,6 +250,16 @@ def getFunc(lines):
                     func = func[1:]
                 list1.append(func)
     return list(set(list1))
+
+"""代码容量度量。
+
+    Args:
+        lines: 代码
+
+    Returns:
+        代码容量度量值
+
+"""
 def Helstead(lines):
     # lines=clearCode(lines)
     n1,n2,N1,N2=0,0,0,0
@@ -334,6 +351,16 @@ def memory_tracker(filePath,idx):
 #
 
 # todo 检查循环深度
+"""代码的循环深度
+
+    Args:
+        lines: 代码
+
+    Returns:
+        代码的循环深度
+        取函数循环深度的最大值
+
+"""
 def getDepth(lines):
     depths=[]
     tmplines=[]
@@ -359,6 +386,15 @@ def getDepth(lines):
         depths.append(roundDepth(mainlines))
     depths.sort()
     return depths[-1]
+"""函数循环深度
+
+    Args:
+        lines: 函数中代码
+
+    Returns:
+        函数循环深度
+
+"""
 def roundDepth(lines):
     dic={}
     for line in lines:
