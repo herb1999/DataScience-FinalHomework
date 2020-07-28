@@ -15,6 +15,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    canGetCode:false,
     caseList: [],
     caseDescrtption: '',
     recommendLabels: {},
@@ -33,6 +34,9 @@ export default new Vuex.Store({
     set_recommendCodes: function (state, data) {
       state.recommendCodes = data
     },
+    set_canGetCode:function (state,data) {
+      state.canGetCode=data
+    }
   },
   actions: {
     // 测试
@@ -79,8 +83,18 @@ export default new Vuex.Store({
         console.log('代码提交失败')
         console.log(err)
       })
-
       message.success('代码提交成功')
+      console.log(res,'res')
+      if (res=='100') {
+        commit("set_canGetCode", true)
+        message.success("通过")
+      }
+      else {
+        commit("set_canGetCode", false)
+         message.warn("未全部通过")
+      }
+
+
       console.log('代码提交成功' + res)
 
     },
@@ -126,5 +140,6 @@ export default new Vuex.Store({
     caseDescrtption: state => state.caseDescrtption,
     recommendLabels: state => Object.entries(state.recommendLabels).sort((i,j) => j[1]-i[1]),
     recommendCodes: state => state.recommendCodes,
+    canGetCode:state=>state.canGetCode,
   }
 })

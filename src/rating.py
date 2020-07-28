@@ -36,12 +36,41 @@ def checkResult(filePath):
         casesResults：测试结果，一个包含0、1的数组，长度为用例数量，用例通过记为1，否则为0
         
 """
+def checkTestCode(caseId,code):
+    bingo=0
+    path = '../cases/' + caseId + '/testCode'
+    casePath='../cases/'+caseId+'/1/.mooctest/testCases.json'
+    pyPath = path+'/testCode.py'
+    f = open(casePath, 'r')
+    res = f.read()
+    data = json.loads(res)
+    caseNum = len(data)
+    for idx, case in enumerate(data):
+        inputPath = path + '/input' + str(idx) + '.txt'
+        with open(inputPath, 'w')as f:
+            f.write(case['input'])
+    for idx in range(caseNum):
+        inputPath =  path+ '/input' + str(idx) + '.txt'
+        outputPath = path + '/output' + str(idx) + '.txt'
+        cmd = 'python' + ' ' + pyPath + ' <' + inputPath + ' >' + outputPath  # py文件的输入输出重定向到input/output文件中
+        os.system(cmd)
+    for idx in range(caseNum):
+        outputPath = path + '/output' + str(idx) + '.txt'
+        output = ''
+        with open(outputPath, 'r')as f:
+            output = f.read()
+        if data[idx]['output'] == output:
+            bingo+=1
+    print(bingo*100/caseNum)
+    return bingo*100/caseNum
+
 def calcuResults(caseId):
     #废案
     #sys.stdin = open('input.txt', 'r')  # 将标准输入重定向为input.txt
     #sys.stdout = open('output.txt', 'w')
     print('-------------测试代码--------------------')
     filePathList=getFilePathList(caseId)
+
 
     # 测试用例路径
     casePath = filePathList[1] + '/.mooctest/testCases.json'
@@ -108,6 +137,7 @@ def calcuResults(caseId):
                         testRes['casesResults'] = [0] * caseNum
                         print('----------------------------------------cheater: ' + filePath)
                         break
+
 
         #统计代码容量
         with open(pyPath,'r',encoding='UTF-8') as f:

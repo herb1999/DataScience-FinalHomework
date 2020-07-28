@@ -45,7 +45,6 @@ export default {
     return {
       code: "",
       modalVisible:false,
-      canGetCode:false,
     };
   },
   name: "test",
@@ -73,7 +72,6 @@ recommendCode
         caseId: this.caseId,
         code: this.code,
       });
-      this.canGetCode=true
     },
     onGetRecommendLabel() {},
     async onGetRecommendCode() {
@@ -85,7 +83,7 @@ recommendCode
     }
   },
   computed: {
-    ...mapGetters(["caseDescrtption", "recommendLabels","recommendCodes"]),
+    ...mapGetters(["caseDescrtption", "recommendLabels","recommendCodes","canGetCode"]),
     caseId() {
       return this.$route.params.testId;
     },

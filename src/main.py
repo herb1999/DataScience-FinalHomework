@@ -14,7 +14,7 @@ if __name__ == '__main__':
 
     # 推荐代码 2176/63、34
     # 面向用例 2176/1
-    caseId = '2176'
+    caseId = '2179'
 
     downloadAndUnzip(caseId)
     calcuResults(caseId)
