@@ -6,7 +6,7 @@
       </div>
       <div class="description">
         <div class="label-div">
-          <div :class="{label:label[1]<1,lable_1:1<=label[1]<2,label_2:label[1]>=2}" v-for="label in recommendLabels" :key="label[0]" >
+          <div :class="{label:label[1]===0,label_1:0<label[1]&&label[1]<1,label_2:label[1]>=1}" v-for="label in recommendLabels" :key="label[0]" >
             {{label[0]}}:{{label[1].toFixed(2)}}
           </div>
         </div>
@@ -152,9 +152,6 @@ recommendCode
       }
 
     }
-  }
-  .red{
-    background: rgb(223, 52, 43);
   }
   .code {
     width: 50%;
