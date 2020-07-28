@@ -4,6 +4,7 @@ import json
 import chardet
 from src.label_recommand import getRecommendedLabel
 from src.code_recommand import getRecommendedCode
+
 import os
 def getMd(caseId):
     with open('../cases/'+caseId+'/1/readme.md', 'r', encoding='UTF-8') as f:
@@ -12,8 +13,17 @@ def getMd(caseId):
     return data
 
 def saveCode(caseId,code):
-    with open('../cases/'+caseId+'/testCode.py', 'w')as f:
+    path='../cases/'+caseId+'/testCode'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    print(path+'/testCode.py')
+    with open(path+'/testCode.py','w') as f:
         f.write(code)
+
+    # with open('../cases/'+caseId+'/testCode.py', 'w')as f:
+    #     f.write(code)
+
+
 
 def getRecommendLabel(caseId):
     path ='../cases/'+caseId+'/recommendLabel.json'

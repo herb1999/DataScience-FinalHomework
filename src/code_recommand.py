@@ -37,7 +37,7 @@ def getRecommendedCode(caseId):
     allPaths.append('../cases/' + caseId + '/0')
 
     # 添加新提交的代码的路径
-    newPath='../cases/' + caseId + '/testCode.py'
+    newPath='../cases/' + caseId +'/testCode'+ '/testCode.py'
     # allPaths.append(newPath)
 
     # 去重
