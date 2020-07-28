@@ -136,7 +136,7 @@ recommendCode
           padding: 6px 10px;
         }
         .label_2{
-          background: rgb(223, 52, 43);
+          background: rgb(169,211,228);
           margin-left: 20px;
           margin-bottom: 20px;
           border-radius: 20px;
