@@ -8,7 +8,6 @@ from flask import request
 from src.util import *
 from back_end.reponseHelper import *
 from back_end.service import *
-from src.rating import checkTestCode
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 CORS(app, resources=r'/*')
@@ -39,7 +38,7 @@ def commitCode():
     print(data)
 
     saveCode(caseId,code)
-    res=checkTestCode(caseId,code)
+    res=checkTestCode(caseId)
     return ResponseOK(res)
 
 @app.route('/recommendLabel',methods=['GET'])

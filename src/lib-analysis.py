@@ -1,10 +1,5 @@
 # coding=utf-8
-"""
-统计指定目录下的python文件中包含的import语句
-可以指定忽略的目标字符串
-放入set中去重，打印
-Python 2.7运行通过
-"""
+
 
 import os
 from collections import Counter
