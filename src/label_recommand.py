@@ -247,10 +247,13 @@ def getRecommendedLabel(caseId):
     # print(np.argmin(rate))
     # print(clusters[int(np.argmin(rate))])
 
+    # 绘制聚类结果
     draw_after_kmeans(X_new, label, bestK)
-    draw_label_and_rate(X, label, bestK)
+    # 绘制簇与评分的关系
+    # draw_label_and_rate(X, label, bestK)
+    # 方差分析
     # F_test(clusters)
-
+    # 选出平均评分最佳（最低）的簇，取其方法/函数统计
     labels = clusters[int(np.argmin(rate))].drop('rate', axis=1).sum().sort_values(ascending=False)
     # stat.sort_values()
     print(labels)
@@ -328,7 +331,7 @@ def getRecommendedLabel(caseId):
 测试代码
 """
 if __name__ == '__main__':
-    getRecommendedLabel('2908')
+    getRecommendedLabel('2172')
 # stat = getStatistics('2307')
 # rated = getRated('2307')
 # X =pd\

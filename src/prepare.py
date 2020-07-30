@@ -156,4 +156,4 @@ def findAllCases():
 # caseId='2307'
 # print(downloadAndUnzip(caseId))
 if __name__ == '__main__':
-    print(findAllCases())
+    downloadAndUnzip('2172')

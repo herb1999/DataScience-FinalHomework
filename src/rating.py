@@ -375,8 +375,8 @@ if __name__ == '__main__':
     #     lines=clearCode(lines)
     #     print(getDepth(lines))
 
-    # calcuResults('2307')
-    rate('2908')
+    calcuResults('2172')
+    rate('2172')
     # hpy().heap()
     # memory_tracker('../cases/2176/2/main.py',0)
 
